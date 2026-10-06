@@ -23,6 +23,11 @@ The final delivery review is in [docs/RELEASE-AUDIT.md](docs/RELEASE-AUDIT.md),
 and the word-for-word video script is in [docs/LOOM-SCRIPT.md](docs/LOOM-SCRIPT.md).
 
 Live application: https://farooqtrucks.vercel.app
+Source: https://github.com/farooq-abdullah/farooqtrucks
+
+Delivery checks: 78 backend tests and nine browser checks passed. The same nine
+browser checks and the independent HTTP/API smoke checks also passed against
+the public app without signing in. Full evidence is in the delivery review.
 
 ## Run locally on Windows
 

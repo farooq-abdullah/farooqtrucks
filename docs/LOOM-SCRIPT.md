@@ -2,17 +2,17 @@
 
 Target: about 4 minutes 45 seconds at a calm pace. Read only the **Say** paragraphs. The action notes, preparation and Q&A are not spoken. Pause briefly after changing screens; avoid scrolling while explaining a rule.
 
-## Fill these in before recording
+## Recording links and verified release checks
 
-- Live app: `[[VERIFIED_PRODUCTION_URL]]`
-- GitHub repository: `[[VERIFIED_GITHUB_URL]]`
-- Release checks, as one spoken phrase: `[[VERIFIED_TEST_SUMMARY]]`
+- Live app: `https://farooqtrucks.vercel.app`
+- GitHub repository: `https://github.com/farooq-abdullah/farooqtrucks`
+- Release checks, as one spoken phrase: `seventy-eight backend tests, nine browser tests, formatting checks and the production build`
 
-Use the final results in `RELEASE-AUDIT.md`; do not read placeholders aloud or describe an unverified deployment as complete.
+The tests above passed locally; the same nine browser checks also passed against the public Vercel app without signing in. The full evidence and assumptions are in `RELEASE-AUDIT.md`.
 
 ## Preparation
 
-1. Open the hosted app at `[[VERIFIED_PRODUCTION_URL]]` in two tabs. Use a clean browser window with unrelated tabs, notifications and secrets out of view. Keep the address bar visible at the introduction.
+1. Open the hosted app at `https://farooqtrucks.vercel.app` in two tabs. Use a clean browser window with unrelated tabs, notifications and secrets out of view. Keep the address bar visible at the introduction.
 2. In the first tab, prepare **Chicago, IL → Springfield, IL → St. Louis, MO**, with **20** current cycle hours. Select the Illinois result for Springfield. Leave this tab on **Plan trip** with the four inputs visible.
 3. In the second tab, generate **Los Angeles, CA → Dallas, TX → New York, NY**, with **68** current cycle hours. Verify the resulting plan actually shows fuel stops, a cycle restart and multiple log days. Preload it so provider latency does not consume the recording.
 4. In the editor, open `backend/trips/views.py`, `backend/trips/serializers.py`, `backend/trips/services/hos/planner.py`, `backend/trips/services/logs.py`, and the test folder. Keep the `services/routing` folder visible in the file tree. Do not open `.env` files.
@@ -73,7 +73,7 @@ On the backend, the Django view coordinates the request. The serializer validate
 
 The scheduler uses integer seconds. The log service splits events at midnight without changing their meaning. React presents that returned schedule rather than implementing a second set of driving rules.
 
-The recorded release checks passed: [[VERIFIED_TEST_SUMMARY]]. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
+The recorded release checks passed: seventy-eight backend tests, nine browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
 
 Boundary tests replay events and assert the limits at every driving segment, rather than trusting output labels. Browser checks then verify that users see the same schedule on desktop, mobile and printed pages. This checks both the calculation and its presentation.
 

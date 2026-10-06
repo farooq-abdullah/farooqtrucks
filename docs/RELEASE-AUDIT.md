@@ -52,7 +52,18 @@ every possible route or certify actual driver activity.
 
 ## Validation record
 
-Final counts and hosted evidence are populated after the final release checks.
+- 78 Django tests passed, including API/provider boundaries, cycle/shift/break
+  limits, inspections, fuel spacing, midnight continuation and exact-day coverage.
+- Nine Playwright checks passed locally against the restarted backend and current
+  frontend: real short/cross-country routes, responsive layouts, errors, cancellation,
+  signatures absent from UI/export, multi-day printing, shorthand and search timeouts.
+- Django system check, Ruff lint and formatting passed. React production build,
+  static collection and the production-settings asset/API smoke test passed.
+- Pinned backend requirements: pip-audit found no known vulnerabilities after the
+  DRF correction. Frontend production dependencies: npm audit found zero.
+- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37511910671)
+  passed on Linux, including Django tests, Ruff, frontend build and time-format test.
+
 The HOS regressions include two deterministic sweeps totaling 330 varied route/
 cycle combinations, plus targeted limit and fractional-second boundaries.
 The provider tests use mocked upstream payloads; live routing/browser checks
@@ -65,13 +76,32 @@ they are not a guarantee of public network latency. A live Tokio search took
 Photon's public service sometimes takes several seconds or times out. Other
 addresses retain bounded, visible failures and retry behavior.
 
+Independent hosted measurements: NY 127ms, LA 111ms, SF 163ms. Short-trip
+planning took 5.8s; the long Los Angeles/Dallas/New York case took 32.4s,
+including road routing and optional stop naming. These are observations from
+the saved hosted report, not latency guarantees. The long case is preloaded
+in the Loom preparation so network wait does not consume the recording.
+
 ## Public verification status
 
-Vercel's first full-stack build reached READY, with the production alias
-https://farooqtrucks.vercel.app. The final release must include the last audit
-fixes, and the unauthenticated public checks must pass before submission.
-Local connections to the new Vercel domains were reset before HTTP; the manual
-GitHub verification workflow provides a second network vantage point.
+Vercel production deployment `dpl_4VxP4nGrkbfMR1fAPgr87nLDMRNj` reached READY at
+https://farooqtrucks.vercel.app with the complete audit fixes. An initial runtime
+import-path failure was corrected in the WSGI entry point; the React index and
+city index are explicitly included in the Python function bundle.
+
+The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37512038200)
+passed its HTTP/API checks: direct pages, built assets, health, NY/LA/SF searches,
+short trip, exhausted cycle, long trip, stationary trip and invalid-input response.
+All nine browser tests also passed against the production URL, including desktop/
+mobile views, route instructions, PDF pagination, signatures absent and search
+timeouts. The complete hosted workflow passed in 2 minutes 33 seconds. Requests
+used no Vercel cookies or bypass token; screenshots, PDFs and sample JSON plans
+are downloadable from that run's `hosted-verification` artifact.
+
+This machine's network reset connections to the Vercel domains before HTTP,
+while GitHub's runner reached the public app successfully. If that persists for
+recording, use another connection for the hosted demo; the local UI remains
+available at http://127.0.0.1:5180/plan. This is distinct from a verified app error.
 
 ## Accuracy scope reviewers should understand
 

@@ -2,7 +2,7 @@
 
 Target: about 4 minutes 45 seconds at a calm pace. Read only the **Say** paragraphs. The action notes, preparation and Q&A are not spoken. Pause briefly after changing screens; avoid scrolling while explaining a rule.
 
-For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 658 words without screen directions.
+For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 645 words without screen directions.
 
 ## Recording links and verified release checks
 
@@ -17,7 +17,7 @@ The tests above passed locally and against the public Vercel app. Both phone reg
 1. Open the hosted app at `https://farooqtrucks.vercel.app` in two tabs. Use a clean browser window with unrelated tabs, notifications and secrets out of view. Keep the address bar visible at the introduction.
 2. In the first tab, prepare **Chicago, IL → Springfield, IL → St. Louis, MO**, with **20** current cycle hours. Select the Illinois result for Springfield. Leave this tab on **Plan trip** with the four inputs visible.
 3. In the second tab, generate **Los Angeles, CA → Dallas, TX → New York, NY**, with **68** current cycle hours. Verify the resulting plan actually shows fuel stops, a cycle restart and multiple log days. Preload it so provider latency does not consume the recording.
-4. In the editor, open `backend/trips/views.py`, `backend/trips/serializers.py`, `backend/trips/services/hos/planner.py`, `backend/trips/services/logs.py`, and the test folder. Keep the `services/routing` folder visible in the file tree. Do not open `.env` files.
+4. Prepare the four code tabs listed in the code walkthrough below. Do not open `.env` files.
 5. Keep a terminal showing the final successful backend and browser test summaries. The spoken test summary must match these results. Open the repository link in another tab for the closing shot.
 6. Rehearse once at 140–145 words per minute, allowing about 15 seconds total for screen transitions. This fits the assessment's 3–5 minute window. Read the output currently on screen; avoid adding memorized mileage, arrival times or day counts.
 
@@ -65,21 +65,19 @@ The scheduler accounts for eleven driving hours, the fourteen-hour driving windo
 
 These are planned outputs under stated assumptions. The start location supplies the assumed home-terminal clock, with a fixed UTC offset. Road times and stop positions are estimates; the route does not validate truck restrictions or identify verified parking. This is a planning tool, not a certified ELD.
 
-## 3:05–4:20 — Show the architecture and evidence
+## 3:05–4:20 — Trace the demonstrated trip
 
-**On screen:** Switch to the editor. Show `views.py` and the serializer first. In the file tree, point to `services/routing`, then show the scheduling loop in `services/hos/planner.py` and the midnight split in `services/logs.py`. Finish on the successful test summaries and their corresponding test files.
+**On screen:** Keep just four code tabs ready. In frontend/src/api.js, point to planTrip's POST and JSON body. In backend/trips/views.py, point to validation, geocode, road_route, build_schedule, daily_logs and the response keys. In backend/trips/services/hos/schedule.py, show the two work(HOUR, ...) calls. In frontend/src/App.jsx, show setPlan(result). Finish on the successful test summaries.
 
 **Say:**
 
-On the backend, the Django view coordinates the request. The serializer validates required locations and rejects non-finite cycle hours or values outside zero to seventy. Routing, scheduling and log generation live in separate services, so the rules can be tested without calling a map provider. WSGI is the server entry point; the trip logic belongs here in the services.
+I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip validates that JSON before calling a map service. Seventy-one used hours would be rejected here.
 
-The scheduler uses integer seconds. The log service splits events at midnight without changing their meaning. React presents that returned schedule rather than implementing a second set of driving rules.
+Next, geocode resolves the locations, and road_route returns the two road legs. In schedule.py, build_schedule drives to pickup, adds one hour of loading, drives to drop-off, then adds one hour of unloading. Those work calls explain the pickup and drop-off blocks we saw on the log.
 
-The recorded release checks passed: eighty-seven backend tests, eleven browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
+Planner tracks driving, shift and cycle usage in seconds and inserts breaks or rests before further driving would exceed a limit. daily_logs splits those same events at midnight. The response contains route, events and daily_logs. App.jsx stores it with setPlan, and React displays that returned plan.
 
-Boundary tests replay events and assert the limits at every driving segment, rather than trusting output labels. Browser checks then verify that users see the same schedule on desktop, mobile and printed pages. This checks both the calculation and its presentation.
-
-Location search also has bounded waits, caching and stale-response protection. A failed provider request produces a visible error rather than a fabricated route.
+All eighty-seven backend tests and eleven browser tests passed. The two mobile checks also passed in WebKit: one hundred successful test executions. Formatting checks and the production build passed too. The tests cover driving limits, fuel spacing, midnight splits, validation and printing.
 
 ## 4:20–4:40 — Close
 

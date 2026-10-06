@@ -525,6 +525,37 @@
           37.6853413
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 6571629,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Dallas",
+        "county": "Dallas",
+        "state": "Texas",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -97.000482,
+          33.0239366,
+          -96.4636317,
+          32.613216
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -96.7968559,
+          32.7762719
+        ]
+      }
     }
   ]
 }

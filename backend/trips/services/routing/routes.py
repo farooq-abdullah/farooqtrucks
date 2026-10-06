@@ -62,6 +62,7 @@ def road_route(locations):
             "geometries": "geojson",
             "overview": "full",
         },
+        retry_transient=True,
     )
     try:
         if data["code"] != "Ok" or not data.get("routes"):

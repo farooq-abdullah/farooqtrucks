@@ -13,6 +13,7 @@ from django.conf import settings
 _geocode_lock = threading.Lock()
 _last_geocode = 0.0
 _http = threading.local()
+_RETRY_BACKOFF_SECONDS = 0.15
 
 
 class RoutingError(Exception):
@@ -23,20 +24,32 @@ class LocationError(RoutingError):
     """The entered place could not be used for a supported trip."""
 
 
-def _request(url, params, *, timeout=(3, 12)):
-    try:
-        if not hasattr(_http, "session"):
-            _http.session = requests.Session()
-        response = _http.session.get(
-            url,
-            params=params,
-            headers={"User-Agent": settings.MAP_USER_AGENT, "Accept": "application/json"},
-            timeout=timeout,
-        )
-        response.raise_for_status()
-        return response.json()
-    except (requests.RequestException, ValueError) as exc:
-        raise RoutingError("The map service is unavailable. Please try again shortly.") from exc
+def _request(url, params, *, timeout=(3, 12), retry_transient=False):
+    if not hasattr(_http, "session"):
+        _http.session = requests.Session()
+    for attempt in range(2 if retry_transient else 1):
+        try:
+            response = _http.session.get(
+                url,
+                params=params,
+                headers={"User-Agent": settings.MAP_USER_AGENT, "Accept": "application/json"},
+                timeout=timeout,
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as exc:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+            retryable = isinstance(exc, (requests.ConnectionError, requests.Timeout)) or status in {
+                502,
+                503,
+                504,
+            }
+            if retry_transient and retryable and attempt == 0:
+                time.sleep(_RETRY_BACKOFF_SECONDS)
+                continue
+            raise RoutingError("The map service is unavailable. Please try again shortly.") from exc
+        except ValueError as exc:
+            raise RoutingError("The map service is unavailable. Please try again shortly.") from exc
 
 
 def _geocoding_request(endpoint, params):

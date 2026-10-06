@@ -3,6 +3,7 @@
 from copy import deepcopy
 from unittest.mock import patch
 
+import requests
 from django.core.cache import cache
 from django.test import SimpleTestCase
 from rest_framework.test import APIClient
@@ -10,6 +11,7 @@ from rest_framework.test import APIClient
 from trips.services.hos import Leg, build_schedule
 from trips.services.logs import daily_logs
 from trips.services.routing import RouteLocator, RoutingError, road_route
+from trips.services.routing import client as routing_client
 from trips.services.routing.routes import MAX_DRIVING_SECONDS, METERS_PER_MILE
 
 from .test_api import INPUTS, LOCATIONS
@@ -205,3 +207,47 @@ class RoutingContractTests(SimpleTestCase):
         self.assertEqual(response.status_code, 502)
         self.assertIn("routing service", response.data["detail"])
         schedule.assert_not_called()
+
+
+class RoutingTransportRetryTests(SimpleTestCase):
+    def setUp(self):
+        session_patch = patch.object(routing_client._http, "session", create=True)
+        self.session = session_patch.start()
+        self.addCleanup(session_patch.stop)
+
+    def response(self, status, data=None):
+        response = requests.Response()
+        response.status_code = status
+        response._content = b"{}"
+        response.json = lambda: data
+        return response
+
+    def test_road_route_retries_one_transient_service_unavailable(self):
+        self.session.get.side_effect = [
+            self.response(503),
+            self.response(200, provider_route()),
+        ]
+        with patch.object(routing_client.time, "sleep") as sleep:
+            result = road_route(LOCATIONS)
+        self.assertEqual(result["provider"], "OSRM")
+        self.assertEqual(self.session.get.call_count, 2)
+        sleep.assert_called_once()
+        self.assertLessEqual(sleep.call_args.args[0], 0.2)
+
+    def test_two_transient_failures_return_bounded_readable_routing_error(self):
+        self.session.get.side_effect = [self.response(503), self.response(503)]
+        with patch.object(routing_client.time, "sleep") as sleep:
+            with self.assertRaisesRegex(RoutingError, "map service is unavailable"):
+                road_route(LOCATIONS)
+        self.assertEqual(self.session.get.call_count, 2)
+        sleep.assert_called_once()
+        self.assertLessEqual(sleep.call_args.args[0], 0.2)
+
+    def test_road_route_retries_transient_connection_failure(self):
+        self.session.get.side_effect = [
+            requests.ConnectionError("reset"),
+            self.response(200, provider_route()),
+        ]
+        with patch.object(routing_client.time, "sleep"):
+            self.assertEqual(road_route(LOCATIONS)["provider"], "OSRM")
+        self.assertEqual(self.session.get.call_count, 2)

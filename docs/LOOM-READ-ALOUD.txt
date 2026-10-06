@@ -1,0 +1,31 @@
+Hi, I'm Farooq. This is farooqtrucks, my Django and React trip planner. It takes the driver's current location, pickup, drop-off and current cycle hours, then produces a road route, a stop schedule and daily log sheets. I'll demonstrate a short trip, a longer trip that needs rest and fueling, and the code and tests behind the calculations.
+
+For the first example, I'm starting in Chicago, picking up in Springfield, Illinois, and delivering to St. Louis, with twenty cycle hours already used. Search supports LA and NY and shows states to distinguish similarly named places.
+
+The result shows the route, estimated distance and driving time, and a chronological itinerary. Selecting an activity focuses its location on the map. Expanding a road leg reveals the driving instructions. The map uses OpenStreetMap tiles, with OSRM supplying the general road route.
+
+Pickup and drop-off each take one hour. The plan also includes fifteen-minute inspections as an explicit planning estimate. Completion includes unloading and the final inspection, so it is different from simply arriving at the destination.
+
+The daily sheet draws off duty, sleeper berth, driving and on-duty time across a full twenty-four hours. Hovering over an activity explains its timing and why it exists. Remarks retain seconds when needed; displayed totals are rounded to minutes and still add up to twenty-four hours.
+
+The important distinction is that midnight starts a new sheet, not a new driving shift. The scheduler carries shift and cycle usage across midnight. It applies the rest rules before resetting them.
+
+The recap also avoids inventing history. We know the entered cycle usage, but not the previous seven daily totals, so exact rolling availability is marked as unavailable. Print generates a separate sheet for each planned day.
+
+This longer example starts in Los Angeles, picks up in Dallas, and ends in New York with sixty-eight cycle hours already used. It exercises fueling, overnight rest and a cycle restart rather than just a short daytime drive.
+
+The scheduler accounts for eleven driving hours, the fourteen-hour driving window, and a qualifying thirty-minute interruption after eight accumulated driving hours. It schedules fuel at or before each thousand-mile interval and applies the seventy-hour cycle constraint. Without earlier daily history, it uses a thirty-four-hour restart when more cycle capacity is needed.
+
+These are planned outputs under stated assumptions. The start location supplies the assumed home-terminal clock, with a fixed UTC offset. Road times and stop positions are estimates; the route does not validate truck restrictions or identify verified parking. This is a planning tool, not a certified ELD.
+
+On the backend, the Django view coordinates the request. The serializer validates required locations and rejects non-finite cycle hours or values outside zero to seventy. Routing, scheduling and log generation live in separate services, so the rules can be tested without calling a map provider. WSGI is the server entry point; the trip logic belongs here in the services.
+
+The scheduler uses integer seconds. The log service splits events at midnight without changing their meaning. React presents that returned schedule rather than implementing a second set of driving rules.
+
+The recorded release checks passed: seventy-nine backend tests, nine browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
+
+Boundary tests replay events and assert the limits at every driving segment, rather than trusting output labels. Browser checks then verify that users see the same schedule on desktop, mobile and printed pages. This checks both the calculation and its presentation.
+
+Location search also has bounded waits, caching and stale-response protection. A failed provider request produces a visible error rather than a fabricated route.
+
+The main engineering challenge was keeping the route, schedule and daily sheets consistent while making the assumptions visible. The hosted app and source repository are linked below, with setup instructions and the verification record. Thank you for reviewing my work.

@@ -40,6 +40,9 @@ every possible route or certify actual driver activity.
   one-request/second policy with a process-local lock.
 - Corrected the road reference on a drive continuing across midnight: it now
   resolves the road at the midnight position and leaves an unavailable road unknown.
+- Reused resolved city/state labels at the current, pickup and drop-off endpoints
+  instead of attempting unnecessary reverse lookups. Estimated intermediate stops
+  still use optional reverse naming, with coordinates available on provider failure.
 - Preserved nonzero seconds in detailed activity times; daily displayed totals
   explicitly use whole-minute allocation and add to 24:00. The recap uses those
   same displayed totals, while exported events retain exact integer seconds.
@@ -61,7 +64,7 @@ every possible route or certify actual driver activity.
   static collection and the production-settings asset/API smoke test passed.
 - Pinned backend requirements: pip-audit found no known vulnerabilities after the
   DRF correction. Frontend production dependencies: npm audit found zero.
-- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37511910671)
+- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37513090635)
   passed on Linux, including Django tests, Ruff, frontend build and time-format test.
 
 The HOS regressions include two deterministic sweeps totaling 330 varied route/
@@ -76,27 +79,32 @@ they are not a guarantee of public network latency. A live Tokio search took
 Photon's public service sometimes takes several seconds or times out. Other
 addresses retain bounded, visible failures and retry behavior.
 
-Independent hosted measurements: NY 127ms, LA 111ms, SF 163ms. Short-trip
-planning took 5.8s; the long Los Angeles/Dallas/New York case took 32.4s,
+Independent final hosted measurements: NY 89ms, LA 82ms, SF 81ms. Short-trip
+planning took 1.1s; the long Los Angeles/Dallas/New York case took 25.2s,
 including road routing and optional stop naming. These are observations from
 the saved hosted report, not latency guarantees. The long case is preloaded
 in the Loom preparation so network wait does not consume the recording.
 
 ## Public verification status
 
-Vercel production deployment `dpl_4VxP4nGrkbfMR1fAPgr87nLDMRNj` reached READY at
+Vercel production deployment `dpl_8jhhHNbjobnjrvu7hZLUSF9GMmNZ` reached READY at
 https://farooqtrucks.vercel.app with the complete audit fixes. An initial runtime
 import-path failure was corrected in the WSGI entry point; the React index and
 city index are explicitly included in the Python function bundle.
 
-The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37512038200)
-passed its HTTP/API checks: direct pages, built assets, health, NY/LA/SF searches,
+The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37513361105)
+passed all 49 HTTP/API checks: direct pages, built assets, health, NY/LA/SF searches,
 short trip, exhausted cycle, long trip, stationary trip and invalid-input response.
 All nine browser tests also passed against the production URL, including desktop/
 mobile views, route instructions, PDF pagination, signatures absent and search
-timeouts. The complete hosted workflow passed in 2 minutes 33 seconds. Requests
+timeouts. The complete hosted workflow passed in 2 minutes 16 seconds. Requests
 used no Vercel cookies or bypass token; screenshots, PDFs and sample JSON plans
 are downloadable from that run's `hosted-verification` artifact.
+
+A repeat check caught a transient upstream Dallas lookup failure. Dallas is now
+included in the verified city index with its original OpenStreetMap source ID;
+the final long-trip API and browser checks passed. Short-trip endpoint remarks
+retain Chicago, IL and Springfield, IL without reverse-lookup warnings.
 
 This machine's network reset connections to the Vercel domains before HTTP,
 while GitHub's runner reached the public app successfully. If that persists for

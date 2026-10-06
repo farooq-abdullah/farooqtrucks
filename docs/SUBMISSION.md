@@ -16,8 +16,9 @@ signature has been removed as requested; these sheets describe a future plan.
 
 ## Recording and submission
 
-The word-for-word [Loom script](LOOM-SCRIPT.md) runs about 4 minutes 40 seconds,
-with exact screen actions, prepared examples and optional reviewer Q&A.
+The word-for-word [Loom script](LOOM-SCRIPT.md) runs about 4 minutes 45 seconds,
+with exact screen actions, prepared examples and optional reviewer Q&A. The
+[spoken-only copy](LOOM-READ-ALOUD.txt) is ready to use in a teleprompter.
 Before recording, open the short Chicago/Springfield Illinois/St. Louis example
 and preload the long Los Angeles/Dallas/New York example with 68 cycle hours.
 Use actual output on screen rather than memorized mileage or times.

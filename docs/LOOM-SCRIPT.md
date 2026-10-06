@@ -2,6 +2,8 @@
 
 Target: about 4 minutes 45 seconds at a calm pace. Read only the **Say** paragraphs. The action notes, preparation and Q&A are not spoken. Pause briefly after changing screens; avoid scrolling while explaining a rule.
 
+For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 650 words without screen directions.
+
 ## Recording links and verified release checks
 
 - Live app: `https://farooqtrucks.vercel.app`
@@ -17,7 +19,7 @@ The tests above passed locally; the same nine browser checks also passed against
 3. In the second tab, generate **Los Angeles, CA → Dallas, TX → New York, NY**, with **68** current cycle hours. Verify the resulting plan actually shows fuel stops, a cycle restart and multiple log days. Preload it so provider latency does not consume the recording.
 4. In the editor, open `backend/trips/views.py`, `backend/trips/serializers.py`, `backend/trips/services/hos/planner.py`, `backend/trips/services/logs.py`, and the test folder. Keep the `services/routing` folder visible in the file tree. Do not open `.env` files.
 5. Keep a terminal showing the final successful backend and browser test summaries. The spoken test summary must match these results. Open the repository link in another tab for the closing shot.
-6. Rehearse once. At 130–145 words per minute, the spoken script plus short screen transitions fits the assessment's 3–5 minute window. Read the output currently on screen; avoid adding memorized mileage, arrival times or day counts.
+6. Rehearse once at 140–145 words per minute, allowing about 15 seconds total for screen transitions. This fits the assessment's 3–5 minute window. Read the output currently on screen; avoid adding memorized mileage, arrival times or day counts.
 
 ## 0:00–0:25 — Introduce the delivered app
 
@@ -33,7 +35,7 @@ Hi, I'm Farooq. This is farooqtrucks, my Django and React trip planner. It takes
 
 **Say:**
 
-For the first example, I'm starting in Chicago, picking up in Springfield, Illinois, and delivering to St. Louis, with twenty cycle hours already used. Location suggestions include the state so similarly named places are distinguishable.
+For the first example, I'm starting in Chicago, picking up in Springfield, Illinois, and delivering to St. Louis, with twenty cycle hours already used. Search supports LA and NY and shows states to distinguish similarly named places.
 
 The result shows the route, estimated distance and driving time, and a chronological itinerary. Selecting an activity focuses its location on the map. Expanding a road leg reveals the driving instructions. The map uses OpenStreetMap tiles, with OSRM supplying the general road route.
 

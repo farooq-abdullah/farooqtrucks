@@ -3,6 +3,9 @@
   "framework": "django",
   "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
   "functions": {
-    "backend/config/wsgi.py": { "maxDuration": 120 }
+    "backend/config/wsgi.py": {
+      "maxDuration": 120,
+      "includeFiles": "{frontend/dist/index.html,backend/trips/services/routing/common_places.json}"
+    }
   }
 }

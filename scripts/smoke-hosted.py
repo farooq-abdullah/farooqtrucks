@@ -26,6 +26,7 @@ def check(condition, label):
 
 
 html = session.get(origin + '/plan', timeout=40)
+print('Public HTML response:', html.status_code, html.url, html.text[:250], flush=True)
 check(html.status_code == 200 and 'farooqtrucks' in html.text, 'Public React page without authentication')
 for path in ('/route', '/logs'):
     response = session.get(origin + path, timeout=30)

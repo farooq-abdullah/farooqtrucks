@@ -163,10 +163,20 @@ class RoutingContractTests(SimpleTestCase):
     def test_moving_leg_rounded_to_zero_seconds_still_gets_one_second(self):
         data = provider_route()
         for leg in data["routes"][0]["legs"]:
+            leg["distance"] = 0.25  # A sub-meter movement can round to zero seconds.
             leg["duration"] = 0
+            leg["steps"][0]["distance"] = 0.25
             leg["steps"][0]["duration"] = 0
         result = self.route(data)
         self.assertEqual(result["driving_seconds"], 2)
+
+    def test_impossible_provider_speed_is_rejected_before_fueling_can_loop(self):
+        data = provider_route()
+        leg = data["routes"][0]["legs"][0]
+        leg.update(distance=1001 * METERS_PER_MILE, duration=1)
+        leg["steps"][0].update(distance=leg["distance"], duration=1)
+        with self.assertRaises(RoutingError):
+            self.route(data)
 
     def test_total_duration_is_bounded_before_scheduling(self):
         data = provider_route()

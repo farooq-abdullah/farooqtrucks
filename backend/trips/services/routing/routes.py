@@ -12,6 +12,7 @@ from .client import RoutingError, _request
 METERS_PER_MILE = 1609.344
 MAX_ROUTE_MILES = 10000
 MAX_DRIVING_SECONDS = 30 * 24 * 3600
+MAX_PROVIDER_SPEED_MPH = 200  # Defensive sanity bound, not a legal driving speed.
 
 
 def _number(value):
@@ -74,6 +75,8 @@ def road_route(locations):
         for source_leg in source_legs:
             distance = _number(source_leg["distance"]) / METERS_PER_MILE
             duration = math.ceil(_number(source_leg["duration"]))
+            if distance * 3600 > MAX_PROVIDER_SPEED_MPH * max(1, duration):
+                raise ValueError("Implausible route speed")
             steps = source_leg["steps"]
             if not isinstance(steps, list) or not steps:
                 raise ValueError("Missing route steps")

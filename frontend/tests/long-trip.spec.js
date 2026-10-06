@@ -1,0 +1,35 @@
+import { test, expect } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+test('long road trip shows fuel, rests and a sheet for every day', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('combobox', { name: 'Current location', exact: true }).fill('Los Angeles, CA');
+  await page.getByRole('combobox', { name: 'Pickup location', exact: true }).fill('Phoenix, AZ');
+  await page.getByRole('combobox', { name: 'Drop-off location', exact: true }).fill('New York, NY');
+  await page.getByRole('spinbutton', { name: 'Current cycle used (hrs)', exact: true }).fill('66');
+  const responsePromise = page.waitForResponse(r => r.url().includes('/api/trips/plan/') && r.request().method() === 'POST', { timeout: 110000 });
+  await page.getByRole('button', { name: 'Plan route & logs →' }).click();
+  const response = await responsePromise; expect(response.status()).toBe(200); const plan = await response.json();
+  expect(plan.summary.distance_miles).toBeGreaterThan(2000);
+  expect(plan.summary.fuel_stops).toBeGreaterThanOrEqual(2);
+  expect(plan.summary.cycle_restarts).toBeGreaterThanOrEqual(1);
+  expect(plan.events.some(e => e.activity.startsWith('Daily rest'))).toBeTruthy();
+  expect(plan.daily_logs.every(log => sum(log.totals_minutes) === 1440)).toBeTruthy();
+  const fuel = plan.events.filter(e => e.activity.startsWith('Fueling'));
+  let previous = 0;
+  for (const stop of fuel) { expect(stop.start_route_miles - previous).toBeLessThanOrEqual(1000 + 1e-6); previous = stop.start_route_miles; }
+  expect(plan.summary.distance_miles - previous).toBeLessThanOrEqual(1000 + 1e-6);
+  await expect(page.locator('.leaflet-container')).toBeVisible();
+  await expect(page.locator('.itinerary-stop')).toHaveCount(1 + plan.events.filter(e => e.status !== 'driving').length);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await page.getByRole('button', { name: 'Review logs', exact: true }).click();
+  await expect(page.locator('.day-choice')).toHaveCount(plan.daily_logs.length);
+  await page.locator('.day-choice').last().click();
+  await expect(page.locator('.mobile-log .duty-graph')).toBeVisible();
+  await page.emulateMedia({ media: 'print' });
+  const artifacts = resolve('../artifacts'); await mkdir(artifacts, { recursive: true });
+  const pdf = await page.pdf({ path: `${artifacts}/long-trip-logs.pdf`, preferCSSPageSize: true, printBackground: true });
+  expect((pdf.toString('latin1').match(/\/Type\s*\/Page\b/g) || []).length).toBe(plan.daily_logs.length);
+});
+const sum = object => Object.values(object).reduce((a, b) => a + b, 0);

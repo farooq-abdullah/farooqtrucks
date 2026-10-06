@@ -1,0 +1,43 @@
+name: Verify public deployment
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Public production app origin
+        required: true
+        default: https://farooqtrucks.vercel.app
+permissions:
+  contents: read
+jobs:
+  hosted:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/smoke-hosted.py "$DEPLOYED_URL"
+        env:
+          DEPLOYED_URL: ${{ inputs.url }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ inputs.url }}
+          PLAYWRIGHT_CHANNEL: chromium
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hosted-verification
+          path: |
+            artifacts/
+            frontend/test-results/

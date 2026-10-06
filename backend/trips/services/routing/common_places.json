@@ -1,0 +1,530 @@
+{
+  "source": "https://photon.komoot.io",
+  "data_source": "OpenStreetMap contributors",
+  "license": "ODbL-1.0",
+  "retrieved": "2026-10-06",
+  "description": "Small verified city index for common aliases and demo inputs. Coordinates are provider centroids, not street addresses.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 175905,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "New York",
+        "state": "New York",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "5"
+        },
+        "extent": [
+          -74.258843,
+          40.91763,
+          -73.700233,
+          40.476578
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -74.0060152,
+          40.7127281
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 207359,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Los Angeles",
+        "county": "Los Angeles",
+        "state": "California",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -118.6681798,
+          34.337306,
+          -118.1552983,
+          33.659541
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.242766,
+          34.0536909
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 111968,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "San Francisco",
+        "state": "California",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "6"
+        },
+        "extent": [
+          -123.173825,
+          37.9296678,
+          -122.2814578,
+          37.6403143
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.4075201,
+          37.7879363
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 5396194,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Washington",
+        "state": "District of Columbia",
+        "country": "United States",
+        "countrycode": "US",
+        "extent": [
+          -77.1197949,
+          38.995968,
+          -76.909366,
+          38.7916303
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -77.0363849,
+          38.8950982
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 170117,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Las Vegas",
+        "county": "Clark",
+        "state": "Nevada",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -115.406575,
+          36.401481,
+          -115.062066,
+          36.129554
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -115.1484131,
+          36.1674263
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 122604,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Chicago",
+        "county": "Cook County",
+        "state": "Illinois",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -87.9400876,
+          42.0230529,
+          -87.5241243,
+          41.644531
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.6244212,
+          41.8755616
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 119557,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Atlanta",
+        "county": "Fulton",
+        "state": "Georgia",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -84.550854,
+          33.886823,
+          -84.28956,
+          33.6479187
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -84.3898151,
+          33.7544657
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 188022,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Philadelphia",
+        "county": "Philadelphia",
+        "state": "Pennsylvania",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -75.280266,
+          40.1379593,
+          -74.9558314,
+          39.867005
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.1635262,
+          39.9527237
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 111257,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Phoenix",
+        "county": "Maricopa",
+        "state": "Arizona",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -112.3240289,
+          33.9183794,
+          -111.9255304,
+          33.2904827
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -112.074141,
+          33.4484367
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 1180533,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Saint Louis",
+        "state": "Missouri",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "6"
+        },
+        "extent": [
+          -90.3206525,
+          38.7743018,
+          -90.1641941,
+          38.5318587
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.190009,
+          38.6254063
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 131885,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "New Orleans",
+        "county": "Orleans Parish",
+        "state": "Louisiana",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -90.1399307,
+          30.1994687,
+          -89.6251763,
+          29.8654809
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.0733934,
+          29.9561422
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 1181618,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Springfield",
+        "city": "Springfield",
+        "county": "Hampden",
+        "state": "Massachusetts",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -72.6221576,
+          42.1622195,
+          -72.471087,
+          42.0637364
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -72.5886727,
+          42.1018764
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 126326,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Springfield",
+        "county": "Sangamon",
+        "state": "Illinois",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -89.773182,
+          39.87417,
+          -89.56851,
+          39.653656
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.6439575,
+          39.7990175
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 141244,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Springfield",
+        "county": "Greene",
+        "state": "Missouri",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -93.4132228,
+          37.2769839,
+          -93.1784958,
+          37.0887889
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -93.2922715,
+          37.2081729
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 182868,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Springfield",
+        "county": "Clark",
+        "state": "Ohio",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -83.8694867,
+          39.9832815,
+          -83.7021739,
+          39.8795756
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.810138,
+          39.9234046
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 186721,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Springfield",
+        "county": "Lane",
+        "state": "Oregon",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -123.0501425,
+          44.094935,
+          -122.8790537,
+          44.0235364
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.0220289,
+          44.0462362
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 130835,
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Springfield",
+        "county": "Washington",
+        "state": "Kentucky",
+        "country": "United States",
+        "countrycode": "US",
+        "extra": {
+          "admin_level": "8"
+        },
+        "extent": [
+          -85.2459,
+          37.711215,
+          -85.183911,
+          37.670609
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.2221819,
+          37.6853413
+        ]
+      }
+    }
+  ]
+}

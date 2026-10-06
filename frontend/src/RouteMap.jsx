@@ -80,8 +80,8 @@ export default function RouteMap({ plan, preview = false, showSample = false, fo
     mapRef.current.setView([focus.coordinates[1], focus.coordinates[0]], 10, {animate:!reduced});
     if (compact) {
       container.current.scrollIntoView({behavior:reduced ? 'instant' : 'smooth',block:'center'});
-      L.popup().setLatLng([focus.coordinates[1], focus.coordinates[0]]).setContent(popup(focus.title, `${focus.place} · ${clock(focus.start)}`)).openOn(mapRef.current);
     }
+    L.popup().setLatLng([focus.coordinates[1], focus.coordinates[0]]).setContent(popup(focus.title, [focus.place, focus.routeReference, `${clock(focus.start)}–${clock(focus.end)}`].filter(Boolean).join('\n'))).openOn(mapRef.current);
   }, [focus, compact]);
   return <div className={`map-wrap ${preview ? 'preview-map' : ''}`} data-tiles-ready={tilesReady}>
     <div ref={container} className="route-map" role="region" aria-label={preview ? 'Entered locations preview' : 'Road route and planned stops'} />

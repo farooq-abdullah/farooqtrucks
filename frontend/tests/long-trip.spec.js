@@ -22,6 +22,8 @@ test('long road trip shows fuel, rests and a sheet for every day', async ({ page
   for (const stop of fuel) { expect(stop.start_route_miles - previous).toBeLessThanOrEqual(1000 + 1e-6); previous = stop.start_route_miles; }
   expect(plan.summary.distance_miles - previous).toBeLessThanOrEqual(1000 + 1e-6);
   await expect(page.locator('.leaflet-container')).toBeVisible();
+  await page.getByRole('button', {name:/30-minute breaks: [1-9]\d* planned/}).click();
+  await expect(page.locator('.leaflet-popup-content')).toContainText('30-minute break');
   await expect(page.locator('.itinerary-stop')).toHaveCount(1 + plan.events.filter(e => e.status !== 'driving').length);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();

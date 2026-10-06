@@ -18,12 +18,12 @@ The scheduler accounts for eleven driving hours, the fourteen-hour driving windo
 
 These are planned outputs under stated assumptions. The start location supplies the assumed home-terminal clock, with a fixed UTC offset. Road times and stop positions are estimates; the route does not validate truck restrictions or identify verified parking. This is a planning tool, not a certified ELD.
 
-I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip calls TripRequestSerializer's is_valid method. The serializer checks the fields before any map request, rejecting values such as seventy-one used hours.
+I'll follow the Chicago trip we just planned. In App.jsx, React checks that cycle hours are between zero and seventy. Entering seventy-one shows a field error before planTrip is called. For valid inputs, api.js sends the three locations and cycle hours. In Django, plan_trip calls the serializer's is_valid method to check the inputs again. That backend validation also protects requests that bypass React.
 
 Next, geocode resolves the locations, and road_route returns the two road legs. In schedule.py, build_schedule drives to pickup, adds one hour of loading, drives to drop-off, then adds one hour of unloading. Those work calls explain the pickup and drop-off blocks we saw on the log.
 
 Planner tracks driving, shift and cycle usage in seconds and inserts breaks or rests before further driving would exceed a limit. daily_logs splits those same events at midnight. The response contains route, events and daily_logs. App.jsx stores it with setPlan, and React displays that returned plan.
 
-All eighty-seven backend tests and eleven browser tests passed. The two mobile checks also passed in WebKit: one hundred successful test executions. Formatting checks and the production build passed too. The tests cover driving limits, fuel spacing, midnight splits, validation and printing.
+All eighty-seven backend tests and eleven browser tests passed. The two mobile checks also passed in WebKit: one hundred successful test executions. Formatting checks and the production build passed too. Tests cover driving limits, midnight splits and printing.
 
 The main engineering challenge was keeping the route, schedule and daily sheets consistent while making the assumptions visible. The hosted app and source repository are linked below, with setup instructions and the verification record. Thank you for reviewing my work.

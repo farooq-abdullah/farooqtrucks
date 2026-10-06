@@ -2,7 +2,7 @@
 
 Target: about 4 minutes 45 seconds at a calm pace. Read only the **Say** paragraphs. The action notes, preparation and Q&A are not spoken. Pause briefly after changing screens; avoid scrolling while explaining a rule.
 
-For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 650 words without screen directions.
+For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 663 words without screen directions.
 
 ## Recording links and verified release checks
 
@@ -67,17 +67,17 @@ These are planned outputs under stated assumptions. The start location supplies 
 
 ## 3:05–4:20 — Trace the demonstrated trip
 
-**On screen:** Keep just four code tabs ready. In frontend/src/api.js, point to planTrip's POST and JSON body. In backend/trips/views.py, point to validation, geocode, road_route, build_schedule, daily_logs and the response keys. In backend/trips/services/hos/schedule.py, show the two work(HOUR, ...) calls. In frontend/src/App.jsx, show setPlan(result). Finish on the successful test summaries.
+**On screen:** Keep four tabs ready. In frontend/src/App.jsx, show submit's 0-70 check and early return before planTrip. In frontend/src/api.js, show the POST and JSON body. In backend/trips/views.py, show serializer.is_valid, the routing/schedule/log calls and response keys. In backend/trips/services/hos/schedule.py, show the two work(HOUR, ...) calls. Return to App.jsx's setPlan(result), then the test summaries.
 
 **Say:**
 
-I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip calls TripRequestSerializer's is_valid method. The serializer checks the fields before any map request, rejecting values such as seventy-one used hours.
+I'll follow the Chicago trip we just planned. In App.jsx, React checks that cycle hours are between zero and seventy. Entering seventy-one shows a field error before planTrip is called. For valid inputs, api.js sends the three locations and cycle hours. In Django, plan_trip calls the serializer's is_valid method to check the inputs again. That backend validation also protects requests that bypass React.
 
 Next, geocode resolves the locations, and road_route returns the two road legs. In schedule.py, build_schedule drives to pickup, adds one hour of loading, drives to drop-off, then adds one hour of unloading. Those work calls explain the pickup and drop-off blocks we saw on the log.
 
 Planner tracks driving, shift and cycle usage in seconds and inserts breaks or rests before further driving would exceed a limit. daily_logs splits those same events at midnight. The response contains route, events and daily_logs. App.jsx stores it with setPlan, and React displays that returned plan.
 
-All eighty-seven backend tests and eleven browser tests passed. The two mobile checks also passed in WebKit: one hundred successful test executions. Formatting checks and the production build passed too. The tests cover driving limits, fuel spacing, midnight splits, validation and printing.
+All eighty-seven backend tests and eleven browser tests passed. The two mobile checks also passed in WebKit: one hundred successful test executions. Formatting checks and the production build passed too. Tests cover driving limits, midnight splits and printing.
 
 ## 4:20–4:40 — Close
 

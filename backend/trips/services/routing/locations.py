@@ -73,12 +73,31 @@ def annotate_schedule(events, route, locations):
     locator = RouteLocator(route["legs"])
     warnings = []
     resolved = {}
+    boundaries = [(0.0, locations[0])]
+    mileage = 0.0
+    for leg, location in zip(route["legs"], locations[1:]):
+        mileage += leg["distance_miles"]
+        boundaries.append((mileage, location))
     for event in events:
         coordinates = locator.at(event["start_route_miles"])
         event["coordinates"] = coordinates
         event["end_coordinates"] = locator.at(event["end_route_miles"])
         event["road"] = locator.road_at(event["start_route_miles"])
         if event["location"].startswith(("Along route", "Route leg")):
+            known = next(
+                (
+                    location
+                    for miles, location in boundaries
+                    if math.isclose(event["start_route_miles"], miles, abs_tol=1e-6, rel_tol=0)
+                ),
+                None,
+            )
+            if known is not None:
+                # These are actual leg endpoints already resolved from the input.
+                # Keep the road-snapped geometry and use its known city/state;
+                # reserve reverse lookup for estimated intermediate positions.
+                event["location"] = known.get("log_location", known["label"])
+                continue
             key = tuple(round(n, 4) for n in coordinates)
             if key not in resolved:
                 try:

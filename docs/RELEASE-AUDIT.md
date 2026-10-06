@@ -52,7 +52,7 @@ every possible route or certify actual driver activity.
 
 ## Validation record
 
-- 78 Django tests passed, including API/provider boundaries, cycle/shift/break
+- 79 Django tests passed, including API/provider boundaries, cycle/shift/break
   limits, inspections, fuel spacing, midnight continuation and exact-day coverage.
 - Nine Playwright checks passed locally against the restarted backend and current
   frontend: real short/cross-country routes, responsive layouts, errors, cancellation,

@@ -7,7 +7,7 @@ from django.test import SimpleTestCase
 from rest_framework.test import APIClient
 
 from trips.clock import default_departure
-from trips.services.routing import RouteLocator, RoutingError, geocode
+from trips.services.routing import RouteLocator, RoutingError, annotate_schedule, geocode
 
 INPUTS = {
     "current_location": "Chicago, IL",
@@ -139,6 +139,25 @@ class APITests(SimpleTestCase):
 
 
 class RouteLocationTests(SimpleTestCase):
+    @patch(
+        "trips.services.routing.locations.reverse_label", side_effect=RoutingError("Unavailable")
+    )
+    def test_known_leg_endpoints_use_resolved_places_without_reverse_lookup(self, reverse):
+        locations = [{**p, "log_location": p["label"]} for p in LOCATIONS]
+        events = [
+            {
+                "start_route_miles": miles,
+                "end_route_miles": miles + 1,
+                "location": "Along route",
+                "status": "driving",
+            }
+            for miles in (0, 200)
+        ]
+        warnings = annotate_schedule(events, example_route(), locations)
+        self.assertEqual(warnings, [])
+        self.assertEqual([e["location"] for e in events], ["Chicago, IL", "Springfield, IL"])
+        reverse.assert_not_called()
+
     @patch(
         "trips.services.routing.geocoding._geocoding_request",
         return_value=[

@@ -69,6 +69,10 @@ every possible route or certify actual driver activity.
   a plan. React reuses the same finite 0-70 check when editing and submitting;
   Django's independent serializer validation remains in place. Correcting the
   value clears the warning, and editing a location does not hide a cycle error.
+- Bundled the original waypoint SVG artwork into the JavaScript app as data URLs.
+  Fuel, break, rest, inspection and endpoint symbols now render without separate
+  image requests. The long-trip regression deliberately fails those image URLs
+  and verifies every map/itinerary waypoint still decodes on desktop and phone.
 - Upgraded DRF from 3.16.1 to 3.17.2 after the dependency audit found two published
   advisories. Pinned runtime requirements subsequently passed pip-audit.
 

@@ -2,6 +2,11 @@ import { test, expect } from './helpers/map-test';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 test('long road trip shows fuel, rests and a sheet for every day', async ({ page }) => {
+  // Marker symbols must survive failed image requests; map tiles are mocked by
+  // the shared fixture, while the road route and schedule still use the API.
+  const waypointPath = /\/assets\/(?:inspection\.svg|figma\/(?:934c0|6ad21|58212|7fe3d|4177e|6cf2b|df277|fcf74|482be)\.svg)$/;
+  await page.route('**/assets/**', route => route.request().resourceType() === 'image' && waypointPath.test(new URL(route.request().url()).pathname)
+    ? route.fulfill({status:404,body:'Image request unavailable'}) : route.continue());
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Current location', exact: true }).fill('Los Angeles, CA');
   await page.getByRole('combobox', { name: 'Pickup location', exact: true }).fill('Phoenix, AZ');
@@ -22,6 +27,10 @@ test('long road trip shows fuel, rests and a sheet for every day', async ({ page
   for (const stop of fuel) { expect(stop.start_route_miles - previous).toBeLessThanOrEqual(1000 + 1e-6); previous = stop.start_route_miles; }
   expect(plan.summary.distance_miles - previous).toBeLessThanOrEqual(1000 + 1e-6);
   await expect(page.locator('.leaflet-container')).toBeVisible();
+  expect(await page.locator('.route-waypoint img').count()).toBeGreaterThan(3);
+  await expect.poll(() => page.locator('.route-waypoint img, .itinerary-stop .waypoint').evaluateAll(images =>
+    images.filter(image => !image.complete || image.naturalWidth === 0).map(image => image.getAttribute('src'))
+  )).toEqual([]);
   await page.getByRole('button', {name:/30-minute breaks: [1-9]\d* planned/}).click();
   await expect(page.locator('.leaflet-popup-content')).toContainText('30-minute break');
   const itineraryCount = await page.locator('.itinerary-stop').count();
@@ -34,6 +43,9 @@ test('long road trip shows fuel, rests and a sheet for every day', async ({ page
   await expect(page.locator('.itinerary-stop')).toHaveCount(1 + plan.events.filter(e => e.status !== 'driving').length);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await expect.poll(() => page.locator('.itinerary-stop .waypoint').evaluateAll(images =>
+    images.filter(image => !image.complete || image.naturalWidth === 0).map(image => image.getAttribute('src'))
+  )).toEqual([]);
   await page.getByRole('button', { name: 'Review logs', exact: true }).click();
   await expect(page.locator('.day-choice')).toHaveCount(plan.daily_logs.length);
   await page.locator('.day-choice').last().click();

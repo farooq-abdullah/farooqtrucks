@@ -2,7 +2,7 @@
 
 Target: about 4 minutes 45 seconds at a calm pace. Read only the **Say** paragraphs. The action notes, preparation and Q&A are not spoken. Pause briefly after changing screens; avoid scrolling while explaining a rule.
 
-For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 645 words without screen directions.
+For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 650 words without screen directions.
 
 ## Recording links and verified release checks
 
@@ -71,7 +71,7 @@ These are planned outputs under stated assumptions. The start location supplies 
 
 **Say:**
 
-I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip validates that JSON before calling a map service. Seventy-one used hours would be rejected here.
+I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip calls TripRequestSerializer's is_valid method. The serializer checks the fields before any map request, rejecting values such as seventy-one used hours.
 
 Next, geocode resolves the locations, and road_route returns the two road legs. In schedule.py, build_schedule drives to pickup, adds one hour of loading, drives to drop-off, then adds one hour of unloading. Those work calls explain the pickup and drop-off blocks we saw on the log.
 

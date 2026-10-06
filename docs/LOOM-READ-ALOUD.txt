@@ -18,7 +18,7 @@ The scheduler accounts for eleven driving hours, the fourteen-hour driving windo
 
 These are planned outputs under stated assumptions. The start location supplies the assumed home-terminal clock, with a fixed UTC offset. Road times and stop positions are estimates; the route does not validate truck restrictions or identify verified parking. This is a planning tool, not a certified ELD.
 
-I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip validates that JSON before calling a map service. Seventy-one used hours would be rejected here.
+I'll follow the Chicago trip we just planned. In api.js, planTrip sends the three locations and twenty used hours to the planning endpoint. In views.py, plan_trip calls TripRequestSerializer's is_valid method. The serializer checks the fields before any map request, rejecting values such as seventy-one used hours.
 
 Next, geocode resolves the locations, and road_route returns the two road legs. In schedule.py, build_schedule drives to pickup, adds one hour of loading, drives to drop-off, then adds one hour of unloading. Those work calls explain the pickup and drop-off blocks we saw on the log.
 

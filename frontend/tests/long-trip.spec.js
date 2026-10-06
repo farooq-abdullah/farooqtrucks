@@ -24,6 +24,13 @@ test('long road trip shows fuel, rests and a sheet for every day', async ({ page
   await expect(page.locator('.leaflet-container')).toBeVisible();
   await page.getByRole('button', {name:/30-minute breaks: [1-9]\d* planned/}).click();
   await expect(page.locator('.leaflet-popup-content')).toContainText('30-minute break');
+  const itineraryCount = await page.locator('.itinerary-stop').count();
+  await page.locator('.itinerary-stop').nth(Math.floor(itineraryCount / 2)).scrollIntoViewIfNeeded();
+  const map = await page.locator('.route-map-column').boundingBox();
+  const header = await page.locator('.workflow-toolbar').boundingBox();
+  expect(map.y).toBeGreaterThanOrEqual(header.y + header.height + 8);
+  expect(map.y).toBeLessThanOrEqual(header.y + header.height + 32);
+  expect(map.y + map.height).toBeLessThanOrEqual(1000);
   await expect(page.locator('.itinerary-stop')).toHaveCount(1 + plan.events.filter(e => e.status !== 'driving').length);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();

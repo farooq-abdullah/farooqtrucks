@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Button, ClickAwayListener, Tooltip } from '@mui/material';
+import { ClickAwayListener, Tooltip } from '@mui/material';
 import Icon from './components/Icon';
 import { duty, DUTY_ORDER } from './theme';
 import { activityLabel, activityReason, clock, dutyHours, hhmm, hm, hms, logActivities, longDate, miles, minuteTime, remarkPlace, shortDate, shortPlace, timeOfDay, utcLabel } from './lib/plan';
@@ -82,7 +82,7 @@ export function DutyGraph({ log, interactive = true, compact = false }) {
     {selected.event_start && (selected.event_start.slice(0, 10) !== log.date || selected.event_end.slice(0, 10) !== log.date) && <p className="caption">Full activity: {shortDate(selected.event_start)} {clock(selected.event_start)} → {shortDate(selected.event_end)} {clock(selected.event_end)}</p>}
   </div>}</div>}</div></ClickAwayListener>;
 }
-export function DayRecap({ log, availability, onHelp }) {
+export function DayRecap({ log, availability }) {
   const driving = log.totals_minutes ? log.totals_minutes.driving / 60 : log.totals_hours.driving;
   const work = log.totals_minutes ? log.totals_minutes.on_duty / 60 : log.totals_hours.on_duty;
   return <section className="day-recap"><h2>70-hour / 8-day recap</h2><div className="recap-values">{[
@@ -90,7 +90,6 @@ export function DayRecap({ log, availability, onHelp }) {
     ['C · On duty today', hm(dutyHours(log))], ['D · Available tomorrow', 'History needed'],
   ].map(([label, value]) => <div key={label}><span className="caption">{label}</span><strong className="mono">{value}</strong></div>)}</div>
     <p className="caption recap-breakdown no-print">Rounded totals: {hm(driving)} driving + {hm(work)} other work = <strong>{hm(dutyHours(log))} on duty</strong>. Breaks and sleeper time are excluded.</p>
-    <Button className="recap-help no-print" onClick={() => onHelp?.('recap')} startIcon={<Icon name="info" />}>Earlier daily hours are needed for an exact rolling recap.</Button>
   </section>;
 }
 export function PlanNotice() {

@@ -82,7 +82,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible { outline:2px soli
 .progress-track { height:3px; background:#E2E8F0; margin-top:2px; display:block; width:100%; }
 .progress-track > span { display:block; height:3px; background:var(--blue); }
 .route-and-stops { display:grid; grid-template-columns:minmax(0,1fr) 408px; gap:24px; align-items:start; }
-.route-map-column { min-width:0; display:flex; flex-direction:column; gap:12px; }
+.route-map-column { min-width:0; display:flex; flex-direction:column; gap:12px; position:sticky; top:100px; align-self:start; }
+.route-map-column .route-map { height:min(470px,calc(100dvh - 148px)); }
 .itinerary { padding:24px; }
 .itinerary ol { margin:16px 0 0; list-style:none; padding:0; }
 .itinerary li + li { border-top:1px solid var(--border); }
@@ -162,7 +163,6 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible { outline:2px soli
 .recap-values { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
 .recap-values > div { display:flex; flex-direction:column; gap:8px; }
 .recap-values strong { font-size:14px; font-weight:500; overflow-wrap:anywhere; }
-.day-recap .recap-help { justify-content:flex-start; padding:0; text-align:left; font-size:12px; color:var(--muted); }
 .plan-notice { border-top:1px solid #CBD5E1; padding-top:16px; }
 .metadata-form { display:flex; flex-direction:column; gap:20px; padding-top:16px; }
 .print-only { display:none; }
@@ -234,6 +234,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible { outline:2px soli
   .route-clocks { display:flex; flex-direction:column; gap:12px; }
   .route-clocks > h2 { font-size:17px; line-height:24px; }
   .view-route .route-map-column { order:2; }
+  .route-map-column { position:static; }
+  .route-map-column .route-map { height:300px; }
   .view-route .page-heading { order:0; }
   .view-route .trip-metrics { order:1; }
   .view-route .itinerary { order:4; }

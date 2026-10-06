@@ -25,37 +25,11 @@ and the word-for-word video script is in [docs/LOOM-SCRIPT.md](docs/LOOM-SCRIPT.
 Live application: https://farooqtrucks.vercel.app
 Source: https://github.com/farooq-abdullah/farooqtrucks
 
-Delivery checks: 79 backend tests and eleven browser checks passed locally.
+Delivery checks: 84 backend tests and eleven browser checks passed locally.
 All eleven browser tests, two WebKit phone checks and 49 HTTP/API checks also
 passed against the public app without signing in. Full evidence is in the
 delivery review. The phone layout and interaction
 corrections are documented in [docs/MOBILE-REVIEW.md](docs/MOBILE-REVIEW.md).
-
-## Run locally on Windows
-
-Python 3.12+ and Node.js 22.12+ are recommended. This workspace already has a
-Python virtual environment in `.venv` and installed frontend dependencies.
-
-Backend, from the repository root:
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
-.\.venv\Scripts\python.exe backend\manage.py runserver 127.0.0.1:8000
-```
-
-Frontend, in a second terminal:
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://127.0.0.1:5180/plan. The other frontend pages use `/route` and
-`/logs`; these paths also load directly when Django serves the production build.
-Vite forwards `/api` requests to Django on port 8000.
-If cloning onto another machine, first run `py -3.12 -m venv .venv` (or use your
-installed Python version). No migration command is needed.
 
 ## No database required
 
@@ -139,7 +113,7 @@ shipping information is not part of the supplied inputs and is left unspecified.
 
 ## Maps and remaining accuracy limits
 
-- **Photon** provides suggestions, forward geocoding and nearby-place lookup
+- **Photon** provides suggestions and forward geocoding
   through Django. Its [public demo](https://github.com/komoot/photon#public-demo-server)
   permits reasonable project use without an availability guarantee. The UI waits
   350 ms after two characters, cancels stale requests and uses bounded timeouts.
@@ -168,6 +142,13 @@ shipping information is not part of the supplied inputs and is left unspecified.
   or truck height/weight/clearance restrictions. A truck-specific routing provider
   should replace this adapter if those restrictions are required.
 - Leaflet displays OpenStreetMap tiles with visible attribution.
+- The bundled 2026 [US Census Places Gazetteer](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html)
+  names estimated stop areas without a live reverse request. References such as
+  “About 1 mi N of Lake Darby, OH” use the nearest published place reference point,
+  approximate straight-line distance and direction. The itinerary adds the road,
+  distance into the trip and a Maps link. These names identify areas, not facilities
+  or highway mileposts. Dataset provenance is in
+  [CENSUS-PLACES.md](backend/trips/services/routing/CENSUS-PLACES.md).
 - Stop coordinates are interpolated along the road polyline from planned mileage.
   These are estimated break/fuel positions, not verified rest areas or fuel stations.
   Within each leg, mileage is distributed proportionally to elapsed driving time;
@@ -179,6 +160,11 @@ shipping information is not part of the supplied inputs and is left unspecified.
   be checked. This version supports the contiguous US.
 - Public demo services have no availability guarantee. Failures are surfaced;
   fabricated routes are never substituted.
+
+The 30-minute-break card reports separate stops scheduled during the trip and the
+time of the first one, which can be opened on the map. Other driver-hour cards
+show completion clocks. Unloading can reset the final break clock to zero; that
+does not mean the preceding trip needed no breaks.
 
 ## Configuration and hosting preparation
 
@@ -282,22 +268,3 @@ the development tools and check the backend from the repository root:
 The React entry point is `frontend/src/App.jsx`. `TripForm.jsx` collects the inputs,
 `RouteView.jsx` and `RouteMap.jsx` show the returned plan, and `LogsView.jsx` plus
 `LogSheet.jsx` display and print the backend's daily records. Calculations stay in Django.
-
-## Django learning resources
-
-The [Tech With Tim Django + React video](https://www.youtube.com/watch?v=c-QsfbznSXI)
-covers the general backend setup, settings, APIs and frontend connection. It also
-spends time on authentication and database CRUD, which are not used in this version.
-It does not teach this project's HOS calculations, map adapter or midnight splitting.
-
-For a focused Django-only path, use:
-
-- [Django tutorial part 1](https://docs.djangoproject.com/en/5.2/intro/tutorial01/): project, settings, URLs and views.
-- [Tech With Tim's shorter Django API video](https://www.youtube.com/watch?v=t-uAgI-AUxc): API structure.
-- [DRF serializers and validation](https://www.django-rest-framework.org/api-guide/serializers/#validation): validating JSON without a database model.
-- [DRF requests and responses](https://www.django-rest-framework.org/tutorial/2-requests-and-responses/): the view's HTTP boundary.
-- [DRF testing](https://www.django-rest-framework.org/api-guide/testing/): testing endpoints.
-- [Python datetime](https://docs.python.org/3/library/datetime.html): the date/time arithmetic used to split logs.
-
-About 5-7 focused hours of reading, video and hands-on practice should help you
-follow this code, assuming you already know Python and React.

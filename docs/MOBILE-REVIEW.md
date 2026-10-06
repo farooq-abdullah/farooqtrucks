@@ -31,7 +31,7 @@ Separating the native select label fixed its accessible name.
 - 11 browser checks passed against the final local source, including real short
   and long routes, mobile/tablet/desktop views, downloads and printed pagination.
 - Both mobile regression checks passed in WebKit with touch/mobile emulation.
-- 79 Django tests and the Django system check passed.
+- 87 Django tests and the Django system check passed for the final delivery.
 - React production build and production-settings HTML/assets/API checks passed.
 - Independent code review rechecked the activity selector, repeated map focus
   and desktop layering; it reported no remaining actionable findings.
@@ -41,8 +41,8 @@ tests use a recorded real API response; the other integration tests still call
 the providers. WebKit emulation does not reproduce a physical iPhone's keyboard
 or browser chrome. Safe-area behavior still benefits from checking on hardware.
 
-The unauthenticated [hosted verification](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37519823898)
-passed all 49 HTTP/API checks, all 11 Chromium browser tests and both WebKit phone
+The unauthenticated [hosted verification](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37527088496)
+passed all 54 HTTP/API checks, all 11 Chromium browser tests and both WebKit phone
 tests against https://farooqtrucks.vercel.app. Vercel deployment
-`dpl_7FZQgdHHbDKSnEAuVgi1PiqAW4ph` serves this release. Its downloadable artifact
+`dpl_EvxeNUqVbMaFuy5HfuK8nHwJc3Jn` serves this release. Its downloadable artifact
 contains screenshots, PDFs and sample plans from the hosted checks.

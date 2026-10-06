@@ -39,14 +39,19 @@ every possible route or certify actual driver activity.
   supplies full city/state labels and coordinates without repeated upstream calls.
   `Springfie` returns distinct Springfields; a bare ambiguous Springfield requires
   a state when planning. `Baton Rouge, LA` retains Louisiana as its state.
-- Switched default forward/reverse geocoding to Photon. Independently scaling
+- Switched default forward geocoding to Photon. Independently scaling
   Vercel instances cannot uphold the public Nominatim service's application-wide
   one-request/second policy with a process-local lock.
 - Corrected the road reference on a drive continuing across midnight: it now
   resolves the road at the midnight position and leaves an unavailable road unknown.
 - Reused resolved city/state labels at the current, pickup and drop-off endpoints
   instead of attempting unnecessary reverse lookups. Estimated intermediate stops
-  still use optional reverse naming, with coordinates available on provider failure.
+  now use the bundled Census reference index, with road/trip-mile fallback on failure.
+- Replaced raw coordinate text with nearby named-place references, roads, trip
+  mileage and map links. The actual route positions remain unchanged. Midnight
+  continuation remarks use the same readable references.
+- Removed the preview-map overlay. Replaced the always-reset completion break
+  display with actual scheduled break count and the first break's time/location.
 - Preserved nonzero seconds in detailed activity times; daily displayed totals
   explicitly use whole-minute allocation and add to 24:00. The recap uses those
   same displayed totals, while exported events retain exact integer seconds.
@@ -59,17 +64,23 @@ every possible route or certify actual driver activity.
 
 ## Validation record
 
-- 79 Django tests passed, including API/provider boundaries, cycle/shift/break
+- 87 Django tests passed, including API/provider boundaries, cycle/shift/break
   limits, inspections, fuel spacing, midnight continuation and exact-day coverage.
 - Eleven Playwright checks passed locally against the restarted backend and current
   frontend: real short/cross-country routes, responsive layouts, errors, cancellation,
   signatures absent from UI/export, multi-day printing, shorthand and search timeouts.
 - Both phone regression checks also passed in WebKit with mobile/touch emulation.
+- Five stop-reference regressions cover the reported Ohio/Pennsylvania positions
+  and road/mileage fallback for unavailable, empty and truncated place data.
+- Three routing transport tests cover a successful retry after transient service/
+  connection failures and a readable bounded failure after both attempts fail.
+- The desktop map stays beside the scrolled itinerary; phone layouts retain their
+  normal page flow. The requested recap sentence and README sections are removed.
 - Django system check, Ruff lint and formatting passed. React production build,
   static collection and the production-settings asset/API smoke test passed.
 - Pinned backend requirements: pip-audit found no known vulnerabilities after the
   DRF correction. Frontend production dependencies: npm audit found zero.
-- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37519689563)
+- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37526894404)
   passed on Linux, including Django tests, Ruff, frontend build and time-format test.
 
 The HOS regressions include two deterministic sweeps totaling 330 varied route/
@@ -84,26 +95,26 @@ they are not a guarantee of public network latency. A live Tokio search took
 Photon's public service sometimes takes several seconds or times out. Other
 addresses retain bounded, visible failures and retry behavior.
 
-Independent final hosted measurements: NY 30ms, LA 32ms, SF 28ms. Short-trip
-planning took 0.9s; the long Los Angeles/Dallas/New York case took 24.9s,
-including road routing and optional stop naming. These are observations from
+Independent final hosted measurements: NY 98ms, LA 27ms, SF 23ms. Short-trip
+planning took 2.4s; the long Los Angeles/Dallas/New York case took 2.4s,
+including road routing and offline stop naming. These are observations from
 the saved hosted report, not latency guarantees. The long case is preloaded
 in the Loom preparation so network wait does not consume the recording.
 
 ## Public verification status
 
-Vercel production deployment `dpl_7FZQgdHHbDKSnEAuVgi1PiqAW4ph` reached READY at
+Vercel production deployment `dpl_EvxeNUqVbMaFuy5HfuK8nHwJc3Jn` reached READY at
 https://farooqtrucks.vercel.app with the complete audit fixes. An initial runtime
 import-path failure was corrected in the WSGI entry point; the React index and
 city index are explicitly included in the Python function bundle.
 
-The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37519823898)
-passed all 49 HTTP/API checks: direct pages, built assets, health, NY/LA/SF searches,
+The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37527088496)
+passed all 54 HTTP/API checks: direct pages, built assets, health, NY/LA/SF searches,
 short trip, exhausted cycle, long trip, stationary trip and invalid-input response.
 All eleven browser tests also passed against the production URL, including desktop/
 mobile views, route instructions, PDF pagination, signatures absent and search
 timeouts. The two phone tests also passed in WebKit against production. The
-complete hosted workflow passed in 2 minutes 55 seconds. Requests
+complete hosted workflow passed in 2 minutes 38 seconds. Requests
 used no Vercel cookies or bypass token; screenshots, PDFs and sample JSON plans
 are downloadable from that run's `hosted-verification` artifact.
 
@@ -112,13 +123,12 @@ included in the verified city index with its original OpenStreetMap source ID;
 the final long-trip API and browser checks passed. Short-trip endpoint remarks
 retain Chicago, IL and Springfield, IL without reverse-lookup warnings.
 
-This machine's home Wi-Fi path resets connections to vercel.app before HTTP.
-The same Vercel IP responds when the hostname is nextjs.org, and the user
-confirmed that the app opens on phone mobile data. GitHub's runner also reached
-the public app successfully. The responsible router/ISP component remains
-unidentified; changing the hosting plan does not resolve that filtering.
-For recording on this connection, a mobile-data hotspot remains an access
-workaround. The local UI is available at http://127.0.0.1:5180/plan.
+Earlier in this session, the machine's connection reset vercel.app before HTTP,
+while the same Vercel IP responded with the nextjs.org hostname and the user
+confirmed mobile-data access. The responsible router/ISP component was not
+identified. The app later became reachable from this computer as well; the
+final public API checks succeeded here and on GitHub's independent network.
+The local UI remains available at http://127.0.0.1:5180/plan.
 
 ## Accuracy scope reviewers should understand
 

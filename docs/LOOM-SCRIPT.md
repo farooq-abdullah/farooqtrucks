@@ -2,15 +2,15 @@
 
 Target: about 4 minutes 45 seconds at a calm pace. Read only the **Say** paragraphs. The action notes, preparation and Q&A are not spoken. Pause briefly after changing screens; avoid scrolling while explaining a rule.
 
-For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 650 words without screen directions.
+For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contains the same 658 words without screen directions.
 
 ## Recording links and verified release checks
 
 - Live app: `https://farooqtrucks.vercel.app`
 - GitHub repository: `https://github.com/farooq-abdullah/farooqtrucks`
-- Release checks, as one spoken phrase: `seventy-nine backend tests, eleven browser tests, formatting checks and the production build`
+- Release checks, as one spoken phrase: `eighty-seven backend tests, eleven browser tests, formatting checks and the production build`
 
-The tests above passed locally and against the public Vercel app without signing in. The two phone regressions also passed in WebKit against production. The public verification record and assumptions are in `RELEASE-AUDIT.md`.
+The tests above passed locally and against the public Vercel app. Both phone regressions also passed in WebKit against production. The full verification record and assumptions are in `RELEASE-AUDIT.md`.
 
 ## Preparation
 
@@ -59,7 +59,7 @@ The recap also avoids inventing history. We know the entered cycle usage, but no
 
 **Say:**
 
-This longer example starts in Los Angeles, picks up in Dallas, and ends in New York with sixty-eight cycle hours already used. It exercises fueling, overnight rest and a cycle restart rather than just a short daytime drive.
+This longer example starts in Los Angeles, picks up in Dallas and ends in New York with sixty-eight cycle hours used. The break card shows the number of stops and the first stop's time. Stop areas also have nearby place names, road references and map links.
 
 The scheduler accounts for eleven driving hours, the fourteen-hour driving window, and a qualifying thirty-minute interruption after eight accumulated driving hours. It schedules fuel at or before each thousand-mile interval and applies the seventy-hour cycle constraint. Without earlier daily history, it uses a thirty-four-hour restart when more cycle capacity is needed.
 
@@ -75,7 +75,7 @@ On the backend, the Django view coordinates the request. The serializer validate
 
 The scheduler uses integer seconds. The log service splits events at midnight without changing their meaning. React presents that returned schedule rather than implementing a second set of driving rules.
 
-The recorded release checks passed: seventy-nine backend tests, eleven browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
+The recorded release checks passed: eighty-seven backend tests, eleven browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
 
 Boundary tests replay events and assert the limits at every driving segment, rather than trusting output labels. Browser checks then verify that users see the same schedule on desktop, mobile and printed pages. This checks both the calculation and its presentation.
 

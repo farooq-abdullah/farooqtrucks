@@ -25,8 +25,8 @@ and the word-for-word video script is in [docs/LOOM-SCRIPT.md](docs/LOOM-SCRIPT.
 Live application: https://farooqtrucks.vercel.app
 Source: https://github.com/farooq-abdullah/farooqtrucks
 
-Delivery checks: 84 backend tests and eleven browser checks passed locally.
-All eleven browser tests, two WebKit phone checks and 49 HTTP/API checks also
+Delivery checks: 87 backend tests and eleven browser checks passed locally.
+All eleven browser tests, two WebKit phone checks and 54 HTTP/API checks also
 passed against the public app without signing in. Full evidence is in the
 delivery review. The phone layout and interaction
 corrections are documented in [docs/MOBILE-REVIEW.md](docs/MOBILE-REVIEW.md).
@@ -160,6 +160,8 @@ shipping information is not part of the supplied inputs and is left unspecified.
   be checked. This version supports the contiguous US.
 - Public demo services have no availability guarantee. Failures are surfaced;
   fabricated routes are never substituted.
+  Read-only road requests retry a transient connection failure or 502/503/504
+  once after a short delay; invalid data and rate-limit responses are not retried.
 
 The 30-minute-break card reports separate stops scheduled during the trip and the
 time of the first one, which can be opened on the map. Other driver-hour cards

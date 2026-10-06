@@ -52,6 +52,12 @@ every possible route or certify actual driver activity.
   continuation remarks use the same readable references.
 - Removed the preview-map overlay. Replaced the always-reset completion break
   display with actual scheduled break count and the first break's time/location.
+- Corrected the restrictive `same-origin` referrer policy that suppressed the
+  origin required by OpenStreetMap tiles. Django and Leaflet tile images now use
+  `strict-origin-when-cross-origin`; paths and query strings remain private.
+  Automated map rendering tests intercept tiles locally rather than fetching
+  OSM's public service, and check the origin referrer even under an old document
+  policy. Real basemap availability is verified separately in a visible browser.
 - Preserved nonzero seconds in detailed activity times; daily displayed totals
   explicitly use whole-minute allocation and add to 24:00. The recap uses those
   same displayed totals, while exported events retain exact integer seconds.
@@ -102,6 +108,17 @@ the saved hosted report, not latency guarantees. The long case is preloaded
 in the Loom preparation so network wait does not consume the recording.
 
 ## Public verification status
+
+The subsequent map-policy fix reached READY as deployment
+`dpl_9yKzpYDH4CgNtixnPxGipAke7ogF`. The public `/plan` response returns
+`Referrer-Policy: strict-origin-when-cross-origin`. A visible Edge browser loaded
+the real OpenStreetMap background at the production URL with all twelve rendered
+tiles loaded and no blocked-tile images. The screenshot is saved locally as
+`artifacts/live-map-fixed.jpg`. The current local checks passed 87 Django tests,
+eleven Chromium browser tests, both WebKit phone tests, Ruff and the React build.
+The referrer regression failed against the previous deployment and passed locally
+and against the new public deployment with the fix; rendering tests now use neutral tile fixtures instead of the public
+tile service. The earlier complete hosted verification below predates this fix.
 
 Vercel production deployment `dpl_EvxeNUqVbMaFuy5HfuK8nHwJc3Jn` reached READY at
 https://farooqtrucks.vercel.app with the complete audit fixes. An initial runtime

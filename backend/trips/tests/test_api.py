@@ -62,6 +62,7 @@ class APITests(SimpleTestCase):
         response = self.client.get("/api/health/")
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data["database_required"])
+        self.assertEqual(response["Referrer-Policy"], "strict-origin-when-cross-origin")
 
     @patch("trips.views.geocode")
     def test_invalid_inputs_never_call_map_service(self, geocode):

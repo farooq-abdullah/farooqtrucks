@@ -27,6 +27,7 @@ export default function RouteMap({ plan, preview = false, showSample = false, fo
     L.control.zoom({ position: 'topleft' }).addTo(map);
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · OSRM', maxZoom: 19,
+      referrerPolicy: 'strict-origin-when-cross-origin',
     }).addTo(map);
     tiles.on('tileerror', () => { setTileError(true); setTilesReady(true); });
     tiles.on('load', () => setTilesReady(true));

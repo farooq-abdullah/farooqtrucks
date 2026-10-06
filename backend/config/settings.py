@@ -50,7 +50,7 @@ OSRM_BASE_URL = os.getenv("OSRM_BASE_URL", "https://router.project-osrm.org")
 MAP_USER_AGENT = os.getenv("MAP_USER_AGENT", "TripLogAssessment/0.1 (local assessment development)")
 DATA_UPLOAD_MAX_MEMORY_SIZE = 32_768
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_REFERRER_POLICY = "same-origin"
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 # Serve the built React app and API on one origin in production.
 FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"

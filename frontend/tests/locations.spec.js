@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './helpers/map-test';
 
 const chicago = { label: 'Chicago, Illinois, United States', primary: 'Chicago', secondary: 'Illinois, United States', supported: true };
 const denver = { label: 'Denver, Colorado, United States', primary: 'Denver', secondary: 'Colorado, United States', supported: true };

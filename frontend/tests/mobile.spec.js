@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './helpers/map-test';
 import { readFile, mkdir } from 'node:fs/promises';
 
 // Actual hosted API output, kept deterministic so layout regressions do not

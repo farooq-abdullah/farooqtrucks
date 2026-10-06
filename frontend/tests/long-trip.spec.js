@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './helpers/map-test';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 test('long road trip shows fuel, rests and a sheet for every day', async ({ page }) => {

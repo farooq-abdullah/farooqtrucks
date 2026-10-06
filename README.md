@@ -141,7 +141,10 @@ shipping information is not part of the supplied inputs and is left unspecified.
 - **OSRM** returns a real road route and estimated durations, without live traffic
   or truck height/weight/clearance restrictions. A truck-specific routing provider
   should replace this adapter if those restrictions are required.
-- Leaflet displays OpenStreetMap tiles with visible attribution.
+- Leaflet displays OpenStreetMap tiles with visible attribution. Both Django and
+  the tile images use `strict-origin-when-cross-origin`, so tile requests send the
+  app origin required by the [tile usage policy](https://operations.osmfoundation.org/policies/tiles/)
+  without disclosing page paths or query strings. Browser caching remains enabled.
 - The bundled 2026 [US Census Places Gazetteer](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html)
   names estimated stop areas without a live reverse request. References such as
   “About 1 mi N of Lake Darby, OH” use the nearest published place reference point,
@@ -216,6 +219,10 @@ and Microsoft Edge installed. They exercise real short and cross-country routes,
 responsive layouts, errors, cancellation, downloads, multiple days, hover/focus
 details, signature removal from the screen and export, PDF pagination, suggestion selection,
 unsupported places, request debounce and stale search responses.
+Automated rendering tests intercept background tiles with a neutral local SVG;
+they do not fetch the public tile service. They verify the tile request's origin
+referrer separately from the real route/API data. Actual basemap availability is
+checked in a normal visible browser, separately from those rendering tests.
 To use Playwright Chromium instead, install it with `npx playwright install chromium`
 and set `$env:PLAYWRIGHT_CHANNEL='chromium'` before running `npm test`.
 Set `PLAYWRIGHT_BASE_URL` to a hosted origin to run those same checks against

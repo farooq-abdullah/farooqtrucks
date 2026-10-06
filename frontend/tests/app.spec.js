@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './helpers/map-test';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const captureDir = '../artifacts';
 async function capture(page, name) {
@@ -15,8 +15,13 @@ async function capture(page, name) {
 }
 async function assertFits(page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy(); }
 
-test('live trip: route, instructions, responsive views, daily graph and download', async ({ page }) => {
+test('live trip: route, instructions, responsive views, daily graph and download', async ({ page, mapTileRequests }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
+  const origin = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5180').origin;
+  await page.route(url => url.origin === origin && ['/', '/plan', '/route', '/logs'].includes(url.pathname), async route => {
+    const response = await route.fetch();
+    await route.fulfill({response,headers:{...response.headers(),'referrer-policy':'same-origin'}});
+  });
   await page.goto('/'); await page.evaluate(() => document.fonts.ready);
   await expect(page.getByRole('heading', { name: 'Plan your next haul' })).toBeVisible();
   await page.getByRole('tab', { name: 'Route & stops', exact: true }).click();
@@ -26,6 +31,8 @@ test('live trip: route, instructions, responsive views, daily graph and download
   await capture(page, 'desktop-empty-logs');
   await page.getByRole('button', { name: 'Enter trip details →' }).click();
   await capture(page, 'desktop-plan');
+  expect(mapTileRequests.length).toBeGreaterThan(0);
+  expect(mapTileRequests.every(request => request.referer === `${origin}/`)).toBeTruthy();
   const responsePromise = page.waitForResponse(r => r.url().includes('/api/trips/plan/') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Plan route & logs →' }).click();
   const response = await responsePromise; expect(response.status()).toBe(200);

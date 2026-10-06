@@ -65,6 +65,10 @@ every possible route or certify actual driver activity.
   coordinates, geometry, maneuvers and implausible duration/speed data. Invalid
   map responses produce a readable error instead of fabricated output or a hang.
 - Rejected boolean cycle hours rather than silently treating true/false as 1/0.
+- Cycle-hour range errors now appear immediately when typing, before submitting
+  a plan. React reuses the same finite 0-70 check when editing and submitting;
+  Django's independent serializer validation remains in place. Correcting the
+  value clears the warning, and editing a location does not hide a cycle error.
 - Upgraded DRF from 3.16.1 to 3.17.2 after the dependency audit found two published
   advisories. Pinned runtime requirements subsequently passed pip-audit.
 

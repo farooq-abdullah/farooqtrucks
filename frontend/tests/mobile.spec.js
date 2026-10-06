@@ -16,6 +16,12 @@ test('phone inputs stay readable without Safari focus zoom', async ({ page }) =>
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     const header = await page.locator('.workflow-toolbar').boundingBox();
     expect(header.height).toBeLessThanOrEqual(72);
+    const cycle = page.getByRole('spinbutton', { name: 'Current cycle used (hrs)', exact: true });
+    await cycle.fill('71');
+    await expect(page.getByText('Enter hours between 0 and 70.')).toBeVisible();
+    await expect(cycle).toHaveAttribute('aria-invalid', 'true');
+    await cycle.fill('20');
+    await expect(page.getByText('Enter hours between 0 and 70.')).toBeHidden();
     const nav = await page.getByRole('tablist', { name: 'Trip workflow' }).boundingBox();
     expect(nav.y + nav.height).toBeGreaterThanOrEqual(820);
     for (const tab of await page.getByRole('tab').all()) {

@@ -96,14 +96,32 @@ test('live trip: route, instructions, responsive views, daily graph and download
 });
 
 test('field validation, provider error, help dialog and cancellation', async ({ page }) => {
+  let planningRequests = 0;
+  page.on('request', request => { if (request.method() === 'POST' && request.url().includes('/api/trips/plan/')) planningRequests += 1; });
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Current location', exact: true }).fill('');
   await page.getByRole('button', { name: 'Plan route & logs →' }).click();
   await expect(page.getByText('Enter a city and state, or a full address.')).toBeVisible();
   await page.getByRole('combobox', { name: 'Current location', exact: true }).fill('Chicago, IL');
-  await page.getByRole('spinbutton', { name: 'Current cycle used (hrs)', exact: true }).fill('71');
+  const cycle = page.getByRole('spinbutton', { name: 'Current cycle used (hrs)', exact: true });
+  await cycle.fill('71');
+  await expect(page.getByText('Enter hours between 0 and 70.')).toBeVisible();
+  await expect(cycle).toHaveAttribute('aria-invalid', 'true');
+  expect(planningRequests).toBe(0);
+  await page.getByRole('combobox', { name: 'Pickup location', exact: true }).fill('Springfield, IL');
+  await expect(page.getByText('Enter hours between 0 and 70.')).toBeVisible();
   await page.getByRole('button', { name: 'Plan route & logs →' }).click(); await expect(page.getByText('Enter hours between 0 and 70.')).toBeVisible();
-  await page.getByRole('spinbutton', { name: 'Current cycle used (hrs)', exact: true }).fill('20');
+  expect(planningRequests).toBe(0);
+  for (const invalid of ['-1', '']) {
+    await cycle.fill(invalid);
+    await expect(page.getByText('Enter hours between 0 and 70.')).toBeVisible();
+  }
+  for (const valid of ['0', '70', '20.5']) {
+    await cycle.fill(valid);
+    await expect(page.getByText('Enter hours between 0 and 70.')).toBeHidden();
+    await expect(cycle).toHaveAttribute('aria-invalid', 'false');
+  }
+  await cycle.fill('20');
   await page.route('**/api/trips/plan/', route => route.fulfill({ status: 502, contentType: 'application/json', body: JSON.stringify({ detail: 'The map service is unavailable. Please try again shortly.' }) }));
   await page.getByRole('button', { name: 'Plan route & logs →' }).click(); await expect(page.getByRole('alert')).toContainText('The map service is unavailable');
   await page.getByRole('button', { name: 'Explain cycle hours' }).click(); await expect(page.getByRole('dialog')).toContainText('34-hour rest'); await page.getByRole('button', { name: 'Got it' }).click();

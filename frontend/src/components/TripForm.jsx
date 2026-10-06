@@ -25,7 +25,7 @@ export default function TripForm({ values, errors, loading, onChange, onSubmit, 
       <TextField id="current_cycle_used" name="current_cycle_used" fullWidth required type="number" value={values.current_cycle_used}
         disabled={loading} onChange={change('current_cycle_used')} error={Boolean(errors.current_cycle_used)}
         helperText={errors.current_cycle_used || <span className="desktop-only">On-duty hours already used in your 70-hour cycle.</span>}
-        slotProps={{ htmlInput: { min: 0, max: 70, step: 'any', inputMode: 'decimal', 'aria-label': 'Current cycle used (hrs)' } }} />
+        slotProps={{ formHelperText: { 'aria-live': 'polite' }, htmlInput: { min: 0, max: 70, step: 'any', inputMode: 'decimal', 'aria-label': 'Current cycle used (hrs)' } }} />
       </div>
     </div>
     <div className="mobile-only"><CycleSummary value={values.current_cycle_used} onHelp={onHelp} /></div>

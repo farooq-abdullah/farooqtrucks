@@ -13,6 +13,10 @@ import LogSheet, { METADATA_FIELDS } from './LogSheet';
 import { cycleByDay } from './lib/plan';
 const RouteMap = lazy(() => import('./RouteMap'));
 const INITIAL = { current_location: 'Chicago, IL', pickup_location: 'Springfield, IL', dropoff_location: 'St. Louis, MO', current_cycle_used: '20' };
+function cycleHoursError(value) {
+  const hours = Number(value);
+  return value.trim() === '' || !Number.isFinite(hours) || hours < 0 || hours > 70 ? 'Enter hours between 0 and 70.' : '';
+}
 const VIEWS = ['plan', 'route', 'logs'];
 const viewFromPath = () => {
   const path = window.location.pathname.replace(/\/$/, '').slice(1);
@@ -46,10 +50,16 @@ export default function App() {
     document.fonts.ready.then(() => requestAnimationFrame(() => { if (!cancelled) window.print(); }));
     return () => { cancelled = true; window.removeEventListener('afterprint', after); };
   }, [printing]);
+  function changeInputs(next) {
+    setInputs(next);
+    const cycleError = cycleHoursError(next.current_cycle_used);
+    setErrors(cycleError ? { current_cycle_used: cycleError } : {});
+  }
   async function submit(event) {
     event.preventDefault(); const nextErrors = {};
     for (const key of ['current_location', 'pickup_location', 'dropoff_location']) if (!inputs[key].trim()) nextErrors[key] = 'Enter a city and state, or a full address.';
-    if (inputs.current_cycle_used.trim() === '' || !Number.isFinite(Number(inputs.current_cycle_used)) || Number(inputs.current_cycle_used) < 0 || Number(inputs.current_cycle_used) > 70) nextErrors.current_cycle_used = 'Enter hours between 0 and 70.';
+    const cycleError = cycleHoursError(inputs.current_cycle_used);
+    if (cycleError) nextErrors.current_cycle_used = cycleError;
     setErrors(nextErrors); setError('');
     if (Object.keys(nextErrors).length) { document.getElementById(Object.keys(nextErrors)[0])?.focus(); return; }
     setLoading(true); const controller = new AbortController(); request.current = controller;
@@ -85,7 +95,7 @@ export default function App() {
     <main key={view} id="workspace" className={`workspace view-${view} no-print`} ref={heading} tabIndex="-1">
       {view === 'plan' && <>
         <div className="page-heading"><h1>Plan your next haul</h1><p>Plan your route, breaks and rests, with pre-filled daily log sheets.</p></div>
-        <div className="plan-layout"><TripForm values={inputs} errors={errors} loading={loading} onChange={next => { setInputs(next); setErrors({}); }} onSubmit={submit} onCancel={() => request.current?.abort()} onHelp={setHelp} />
+        <div className="plan-layout"><TripForm values={inputs} errors={errors} loading={loading} onChange={changeInputs} onSubmit={submit} onCancel={() => request.current?.abort()} onHelp={setHelp} />
           {wide && <div className="locations-preview desktop-only"><div className="section-heading"><span>Locations preview</span><span className="caption">{previewPlan || exactSample ? '3 entered locations' : 'Plan to preview locations'}</span></div>
             <Suspense fallback={<Skeleton variant="rounded" height={466} />}><RouteMap plan={previewPlan} preview showSample={exactSample} /></Suspense><CycleSummary value={inputs.current_cycle_used} onHelp={setHelp} />
           </div>}

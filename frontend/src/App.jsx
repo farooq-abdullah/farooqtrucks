@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Tab, Tabs, TextField } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Tab, Tabs, TextField, useMediaQuery } from '@mui/material';
 import { planTrip } from './api';
 import Brand from './components/Brand';
+import Icon from './components/Icon';
 import TripForm from './components/TripForm';
 import CycleSummary from './components/CycleSummary';
 import PlanningParameters, { EXPLANATIONS } from './components/PlanningParameters';
@@ -19,6 +20,7 @@ const viewFromPath = () => {
 };
 
 export default function App() {
+  const wide = useMediaQuery('(min-width:1001px)');
   const [inputs, setInputs] = useState(INITIAL), [errors, setErrors] = useState({});
   const [plan, setPlan] = useState(null), [submitted, setSubmitted] = useState(null), [view, setView] = useState(viewFromPath);
   const [loading, setLoading] = useState(false), [error, setError] = useState(''), [help, setHelp] = useState(null);
@@ -76,17 +78,17 @@ export default function App() {
     <header className="workflow-toolbar no-print"><div className="toolbar-inner">
       <Brand onClick={event => { event.preventDefault(); navigate('plan'); }} />
       <Tabs className="workflow-tabs" value={view} onChange={(_, target) => navigate(target)} aria-label="Trip workflow" slotProps={{ indicator: { style: { display: 'none' } } }}>
-        <Tab value="plan" label="Plan trip" /><Tab value="route" label={<><span className="desktop-only">Route & stops</span><span className="mobile-only">Route</span></>} /><Tab value="logs" label="Daily logs" />
+        <Tab value="plan" icon={<span className="tab-symbol mobile-only"><Icon name="pencil" size={20} /></span>} label="Plan trip" /><Tab value="route" icon={<span className="tab-symbol mobile-only"><Icon name="route" /></span>} label={<><span className="desktop-only">Route & stops</span><span className="mobile-only">Route</span></>} /><Tab value="logs" icon={<span className="tab-symbol mobile-only"><Icon name="file" /></span>} label="Daily logs" />
       </Tabs>
       <div className="toolbar-actions">{view === 'route' && plan ? <><Button className="desktop-only" variant="outlined" onClick={() => navigate('plan')}>Edit trip</Button><Button variant="contained" onClick={() => navigate('logs')}><span className="desktop-only">Review log sheets →</span><span className="mobile-only">Review logs</span></Button></> : view === 'logs' && plan ? <Button variant="contained" onClick={() => setPrinting(true)}>Print logs</Button> : <span className="desktop-only toolbar-rule">PROPERTY CARRYING <b className="mono">70h / 8d</b></span>}</div>
     </div></header>
-    <main id="workspace" className={`workspace view-${view} no-print`} ref={heading} tabIndex="-1">
+    <main key={view} id="workspace" className={`workspace view-${view} no-print`} ref={heading} tabIndex="-1">
       {view === 'plan' && <>
         <div className="page-heading"><h1>Plan your next haul</h1><p>Plan your route, breaks and rests, with pre-filled daily log sheets.</p></div>
         <div className="plan-layout"><TripForm values={inputs} errors={errors} loading={loading} onChange={next => { setInputs(next); setErrors({}); }} onSubmit={submit} onCancel={() => request.current?.abort()} onHelp={setHelp} />
-          <div className="locations-preview desktop-only"><div className="section-heading"><span>Locations preview</span><span className="caption">{previewPlan || exactSample ? '3 entered locations' : 'Plan to preview locations'}</span></div>
+          {wide && <div className="locations-preview desktop-only"><div className="section-heading"><span>Locations preview</span><span className="caption">{previewPlan || exactSample ? '3 entered locations' : 'Plan to preview locations'}</span></div>
             <Suspense fallback={<Skeleton variant="rounded" height={466} />}><RouteMap plan={previewPlan} preview showSample={exactSample} /></Suspense><CycleSummary value={inputs.current_cycle_used} onHelp={setHelp} />
-          </div>
+          </div>}
         </div>
         {error && <Alert severity="error" action={<Button color="inherit" onClick={() => setError('')}>Dismiss</Button>}>{error}</Alert>}
         <PlanningParameters onHelp={setHelp} />

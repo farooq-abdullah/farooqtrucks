@@ -20,13 +20,14 @@ export default function RouteView({ plan, onHelp, onDownload }) {
       <div key={label}><span className="caption">{label}</span><strong className="mono">{value}</strong>{label === 'Complete by' && <span className="caption">{shortDate(summary.completion_time)} · terminal clock</span>}</div>)}
     </div>
     <div className="desktop-only"><PlanningParameters plan={plan} onHelp={onHelp} /></div>
-    <div className="route-clocks"><DriverClocks clocks={plan.clocks} onHelp={onHelp} /></div>
+    <div className="route-clocks"><h2 className="mobile-only">Clocks at completion</h2><DriverClocks clocks={plan.clocks} onHelp={onHelp} /></div>
     <div className="route-and-stops">
       <div className="route-map-column"><Suspense fallback={<Skeleton variant="rounded" height={470} />}><RouteMap plan={plan} focus={focus} /></Suspense>
+        <div className="mobile-route-key mobile-only">{plan.locations.map((location, index) => <div key={index}><b>{index + 1}</b><span><small>{['Start', 'Pickup', 'Drop-off'][index]}</small>{shortPlace(location.log_location || location.label)}</span></div>)}</div>
         <p className="caption desktop-only">General road route · check truck restrictions. Stop markers show estimated locations.</p>
       </div>
       <section className="itinerary surface"><div className="section-heading"><h2>Trip itinerary</h2><span className="caption">{stops.length} activities</span></div>
-        <ol>{stops.map((stop, index) => <li key={stop.key}><ButtonBase className="itinerary-stop" onClick={() => setFocus(stop)} aria-label={`Show ${stop.title} at ${stop.place} on map`}>
+        <ol>{stops.map((stop, index) => <li key={stop.key}><ButtonBase className="itinerary-stop" onClick={() => setFocus({ ...stop })} aria-label={`Show ${stop.title} at ${stop.place} on map`}>
           <Waypoint kind={stop.kind} /><div><span className="caption mono">{String(index + 1).padStart(2, '0')} · {stop.title.toUpperCase()}</span>
             <strong title={stop.fullPlace}>{stop.place}</strong><span className="mono stop-time">{shortDate(stop.start)} · {clock(stop.start)}{stop.hours > 0 && `–${stop.start.slice(0, 10) !== stop.end.slice(0, 10) ? shortDate(stop.end) + ' ' : ''}${clock(stop.end)}`}</span>
             <span className="caption">{stop.kind === 'start' ? (stop.title === 'Depart' ? 'Departure' : 'Planning starts') : `${hm(stop.hours)} ${stop.status === 'on_duty' ? 'on duty' : 'rest'}`}</span>

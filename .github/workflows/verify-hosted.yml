@@ -27,13 +27,19 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
         working-directory: frontend
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
         working-directory: frontend
       - run: npm test
         working-directory: frontend
         env:
           PLAYWRIGHT_BASE_URL: ${{ inputs.url }}
           PLAYWRIGHT_CHANNEL: chromium
+      - name: Verify phone layouts in WebKit
+        run: npx playwright test mobile.spec.js
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ inputs.url }}
+          PLAYWRIGHT_BROWSER: webkit
       - uses: actions/upload-artifact@v4
         if: always()
         with:

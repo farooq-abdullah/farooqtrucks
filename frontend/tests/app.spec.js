@@ -66,9 +66,8 @@ test('live trip: route, instructions, responsive views, daily graph and download
   await page.locator('.mobile-log [data-log-activity^="Pre-trip inspection"] .activity-hit').click();
   await expect(page.getByRole('tooltip')).toContainText('Pre-trip inspection');
   await page.locator('.mobile-log [data-log-activity^="Pre-trip inspection"]').press('Escape');
-  const labelsBefore = await page.locator('.mobile-log .duty-labels').boundingBox();
-  await page.locator('.mobile-log .time-scroller').evaluate(node => node.scrollLeft = 420);
-  const labelsAfter = await page.locator('.mobile-log .duty-labels').boundingBox(); expect(labelsAfter.x).toBe(labelsBefore.x);
+  expect(await page.locator('.mobile-log .time-scroller').evaluate(node => node.scrollWidth <= node.clientWidth)).toBeTruthy();
+  await expect(page.locator('.mobile-log .duty-graph')).toContainText('24:00');
   await page.getByRole('button', { name: 'Events', exact: true }).click(); await expect(page.locator('.log-events')).toBeVisible(); await capture(page, 'mobile-events');
   await page.getByRole('tab', { name: 'Route', exact: true }).click();
   const downloadEvent = page.waitForEvent('download'); await page.getByRole('button', { name: 'Download plan', exact: true }).click();

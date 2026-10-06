@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Button, ClickAwayListener, Tooltip } from '@mui/material';
 import Icon from './components/Icon';
 import { duty, DUTY_ORDER } from './theme';
@@ -10,25 +10,38 @@ export const METADATA_FIELDS = [
   ['office', 'Main office address'], ['terminal', 'Home terminal'], ['truck', 'Tractor / truck no.'],
   ['trailer', 'Trailer no.'], ['shipping', 'Shipping document no.'], ['commodity', 'Shipper / commodity'],
 ];
-const y = status => 65 + DUTY_ORDER.indexOf(status) * 42;
-export function DutyGraph({ log, interactive = true }) {
+export function DutyGraph({ log, interactive = true, compact = false }) {
+  const pickerId = useId();
   const [active, setActive] = useState(null);
   const [pointer, setPointer] = useState('mouse');
-  const width = 844, x = minute => 10 + minute / 1440 * (width - 20);
+  const scroller = useRef(null), [compactWidth, setCompactWidth] = useState(240);
+  useEffect(() => {
+    if (!compact || !scroller.current) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.width > 0) setCompactWidth(entry.contentRect.width);
+    });
+    observer.observe(scroller.current);
+    return () => observer.disconnect();
+  }, [compact]);
+  const width = compact ? compactWidth : 844, height = compact ? 204 : 232;
+  const x = minute => 10 + minute / 1440 * (width - 20);
+  const y = status => (compact ? 51 : 65) + DUTY_ORDER.indexOf(status) * (compact ? 38 : 42);
   const activities = logActivities(log);
+  const activeIndex = activities.findIndex((_, index) => active === `${log.date}-${index}`);
+  const selected = activities[activeIndex];
   const points = [];
   log.segments.forEach((segment, i) => {
     if (i) points.push(`${x(segment.start_minute)},${y(log.segments[i - 1].status)}`);
     points.push(`${x(segment.start_minute)},${y(segment.status)}`, `${x(segment.end_minute)},${y(segment.status)}`);
   });
-  return <ClickAwayListener onClickAway={() => setActive(null)}><div className="duty-graph">
-    <div className="duty-labels"><div className="graph-heading">DUTY STATUS</div>{DUTY_ORDER.map((key, i) => <div key={key}><b className="status-dot" style={{ background: duty[key].color }} /><span>{i + 1}. {duty[key].label}{key === 'on_duty' && <small>Not driving</small>}</span></div>)}<div className="graph-bottom" /></div>
-    <div className="time-scroller" tabIndex="0" role="region" aria-label="24-hour timeline. Scroll horizontally to view all hours.">
-      <svg viewBox={`0 0 ${width} 232`} preserveAspectRatio="none" className="log-grid" role="group" aria-label={`Planned duty changes for ${log.date}`}>
+  return <ClickAwayListener onClickAway={() => setActive(null)}><div className={compact ? 'compact-log-reader' : undefined}><div className={`duty-graph ${compact ? 'compact' : ''}`}>
+    <div className="duty-labels"><div className="graph-heading">{compact ? 'Status' : 'DUTY STATUS'}</div>{DUTY_ORDER.map((key, i) => <div key={key}><b className="status-dot" style={{ background: duty[key].color }} /><span>{!compact && `${i + 1}. `}{duty[key].label}{key === 'on_duty' && <small>Not driving</small>}</span></div>)}<div className="graph-bottom" /></div>
+    <div ref={scroller} className="time-scroller" tabIndex={compact ? undefined : 0} role="region" aria-label={compact ? 'Complete 24-hour timeline' : '24-hour timeline. Scroll horizontally to view all hours.'}>
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="log-grid" role="group" aria-label={`Planned duty changes for ${log.date}`}>
         <title>Duty status from midnight to midnight</title><desc>{log.segments.map(s => `${duty[s.status].label} from minute ${s.start_minute.toFixed(1)} to ${s.end_minute.toFixed(1)}`).join('. ')}</desc>
-        <rect width={width} height="44" fill="#EDF2F7" />
-        {Array.from({ length: 25 }, (_, hour) => <g key={hour}><text x={x(hour * 60)} y="17" textAnchor="middle" fontSize="9">{hour === 0 || hour === 24 ? 'Mid.' : hour === 12 ? 'Noon' : hour % 12}</text><line x1={x(hour * 60)} x2={x(hour * 60)} y1="24" y2="212" stroke="#CBD5E1" /></g>)}
-        {DUTY_ORDER.map(key => <g key={key}><line x1="0" x2={width} y1={y(key) + 21} y2={y(key) + 21} stroke="#E2E8F0" />{Array.from({ length: 97 }, (_, tick) => <line key={tick} x1={x(tick * 15)} x2={x(tick * 15)} y1={y(key) + (tick % 4 === 0 ? 4 : tick % 2 === 0 ? 11 : 16)} y2={y(key) + 21} stroke="#788A9B" strokeWidth="0.6" />)}</g>)}
+        <rect width={width} height={compact ? 32 : 44} fill="#EDF2F7" />
+        {Array.from({ length: 25 }, (_, hour) => <g key={hour}>{(!compact || hour % 6 === 0) && <text x={x(hour * 60)} y="17" textAnchor="middle" fontSize={compact ? 10 : 9}>{compact ? String(hour).padStart(2, '0') : hour === 0 || hour === 24 ? 'Mid.' : hour === 12 ? 'Noon' : hour % 12}</text>}<line x1={x(hour * 60)} x2={x(hour * 60)} y1={compact ? 32 : 24} y2={compact ? 184 : 212} stroke={compact && hour % 6 !== 0 ? '#EDF2F7' : '#CBD5E1'} /></g>)}
+        {DUTY_ORDER.map(key => <g key={key}><line x1="0" x2={width} y1={y(key) + (compact ? 19 : 21)} y2={y(key) + (compact ? 19 : 21)} stroke="#E2E8F0" />{!compact && Array.from({ length: 97 }, (_, tick) => <line key={tick} x1={x(tick * 15)} x2={x(tick * 15)} y1={y(key) + (tick % 4 === 0 ? 4 : tick % 2 === 0 ? 11 : 16)} y2={y(key) + 21} stroke="#788A9B" strokeWidth="0.6" />)}</g>)}
         <polyline points={points.join(' ')} fill="none" stroke="#101F30" strokeWidth="3" strokeLinejoin="round" />
         {interactive && activities.map((activity, index) => {
           const key = `${log.date}-${index}`, hours = (activity.end_minute - activity.start_minute) / 60;
@@ -37,7 +50,7 @@ export function DutyGraph({ log, interactive = true }) {
           const transition = previous && previous.status !== activity.status ? `M ${x(activity.start_minute)} ${y(previous.status)} V ${y(activity.status)}` : null;
           const fullPeriod = activity.event_start && (activity.event_start.slice(0, 10) !== log.date || activity.event_end.slice(0, 10) !== log.date);
           return <Tooltip key={key} arrow followCursor={pointer === 'mouse'} describeChild disableInteractive disableTouchListener enterDelay={0} leaveDelay={0}
-            open={active === key} onOpen={() => setActive(key)} onClose={() => pointer !== 'touch' && setActive(value => value === key ? null : value)}
+            open={active === key && pointer !== 'select'} onOpen={() => setActive(key)} onClose={() => pointer !== 'touch' && pointer !== 'select' && setActive(value => value === key ? null : value)}
             slotProps={{ tooltip: { className: 'log-tooltip' }, popper: { className: 'no-print' } }}
             title={<div className="log-tooltip-content"><strong>{label}</strong><span className="mono">{minuteTime(activity.start_minute)}–{minuteTime(activity.end_minute)} · {hms(hours)}</span>
               <span>{duty[activity.status].label}{activity.status === 'on_duty' ? ' · counts as work' : activity.status === 'driving' ? ' · counts as work' : ' · does not count as work'}</span>
@@ -54,16 +67,20 @@ export function DutyGraph({ log, interactive = true }) {
                 if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActive(value => value === key ? null : key); }
               }}>
               <path className="activity-highlight" d={line} fill="none" stroke="#244EBA" strokeWidth="5" pointerEvents="none" />
-              {transition && <path d={transition} fill="none" stroke="transparent" strokeWidth="4" pointerEvents="stroke" />}
+              {transition && <path d={transition} fill="none" stroke="transparent" strokeWidth="4" pointerEvents={compact ? 'none' : 'stroke'} />}
               <rect className="activity-hit" x={x(activity.start_minute)} y={y(activity.status) - 8} width={Math.max(1, x(activity.end_minute) - x(activity.start_minute))} height="16" fill="transparent" />
             </g>
           </Tooltip>;
         })}
-        <text x="10" y="227" fontSize="10">Midnight · 00:00</text><text x={width / 2} y="227" textAnchor="middle" fontSize="10">Noon · 12:00</text><text x={width - 10} y="227" textAnchor="end" fontSize="10">Midnight · 24:00</text>
+        <text x="10" y={height - 5} fontSize="10">{compact ? '00:00' : 'Midnight · 00:00'}</text><text x={width / 2} y={height - 5} textAnchor="middle" fontSize="10">{compact ? '12:00' : 'Noon · 12:00'}</text><text x={width - 10} y={height - 5} textAnchor="end" fontSize="10">{compact ? '24:00' : 'Midnight · 24:00'}</text>
       </svg>
     </div>
     <div className="duty-totals"><div className="graph-heading">H:M</div>{DUTY_ORDER.map(key => <div key={key} className="mono">{hhmm(log.totals_minutes ? log.totals_minutes[key] / 60 : log.totals_hours[key])}</div>)}<div className="graph-bottom mono">24:00</div></div>
-  </div></ClickAwayListener>;
+  </div>{compact && <div className="compact-activity-picker"><label htmlFor={pickerId}>Activity details</label><select id={pickerId} value={activeIndex < 0 ? '' : activeIndex} onChange={event => { setPointer('select'); setActive(event.target.value === '' ? null : `${log.date}-${event.target.value}`); }}>
+    <option value="">Choose an activity</option>{activities.map((activity, index) => <option key={index} value={index}>{minuteTime(activity.start_minute)} · {activityLabel(activity.activity)}</option>)}
+  </select>{selected && <div className="compact-activity-details" role="status"><strong>{activityLabel(selected.activity)}</strong><span className="mono">{minuteTime(selected.start_minute)}–{minuteTime(selected.end_minute)} · {hms((selected.end_minute - selected.start_minute) / 60)}</span><span className="caption">{remarkPlace(selected)}</span><p className="caption">{selected.reason || activityReason(selected.activity)}</p>
+    {selected.event_start && (selected.event_start.slice(0, 10) !== log.date || selected.event_end.slice(0, 10) !== log.date) && <p className="caption">Full activity: {shortDate(selected.event_start)} {clock(selected.event_start)} → {shortDate(selected.event_end)} {clock(selected.event_end)}</p>}
+  </div>}</div>}</div></ClickAwayListener>;
 }
 export function DayRecap({ log, availability, onHelp }) {
   const driving = log.totals_minutes ? log.totals_minutes.driving / 60 : log.totals_hours.driving;

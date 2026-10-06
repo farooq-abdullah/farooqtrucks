@@ -113,6 +113,15 @@ in the Loom preparation so network wait does not consume the recording.
 
 ## Public verification status
 
+The October 7 cycle-validation update reached READY as deployment
+`dpl_6HSJ1fANhF2ye3i7r2PCidzEH24i` from source commit `01bd1d8`. A visible
+Edge browser at the public URL showed the inline warning immediately after
+entering 71, before clicking Plan. The screenshot is saved locally as
+`artifacts/live-cycle-warning.jpg`. All eleven browser tests and both WebKit
+phone checks passed locally, including immediate feedback at phone widths,
+valid boundary/fractional values and no planning request for invalid input.
+The production build passed; scheduling and backend validation were unchanged.
+
 The subsequent map-policy fix reached READY as deployment
 `dpl_9yKzpYDH4CgNtixnPxGipAke7ogF`. The public `/plan` response returns
 `Referrer-Policy: strict-origin-when-cross-origin`. A visible Edge browser loaded

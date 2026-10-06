@@ -5,7 +5,7 @@
   "functions": {
     "backend/config/wsgi.py": {
       "maxDuration": 120,
-      "includeFiles": "{frontend/dist/index.html,backend/trips/services/routing/common_places.json}"
+      "includeFiles": "{frontend/dist/index.html,backend/trips/services/routing/common_places.json,backend/trips/services/routing/us_places_2026.json.gz}"
     }
   }
 }

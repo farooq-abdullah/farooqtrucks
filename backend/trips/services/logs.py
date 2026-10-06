@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 STATUSES = ("off_duty", "sleeper_berth", "driving", "on_duty")
 
 
-def daily_logs(events, position_at=None, road_at=None):
+def daily_logs(events, position_at=None, road_at=None, place_at=None):
     first = datetime.fromisoformat(events[0]["start"])
     finish = datetime.fromisoformat(events[-1]["end"])
     midnight = first.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -26,6 +26,7 @@ def daily_logs(events, position_at=None, road_at=None):
             activity = event["activity"]
             coordinates, location = event.get("coordinates"), event["location"]
             road = event.get("road")
+            route_reference = event.get("route_reference")
             if start < midnight:
                 activity = f"Continue {activity[:1].lower() + activity[1:]}"
                 if event["status"] == "driving":
@@ -40,8 +41,13 @@ def daily_logs(events, position_at=None, road_at=None):
                     road = road_at(midnight_miles) if road_at else None
                     if position_at:
                         coordinates = position_at(midnight_miles)
+                        route_reference = (
+                            f"{road} · " if road else ""
+                        ) + f"{midnight_miles:,.0f} mi into trip"
                         location = (
-                            f"In transit at {coordinates[1]:.4f}, {coordinates[0]:.4f} (estimated)"
+                            f"In transit · {place_at(midnight_miles)}"
+                            if place_at
+                            else f"In transit · {route_reference}"
                         )
                     else:
                         coordinates, location = None, "In transit; position not supplied"
@@ -55,6 +61,7 @@ def daily_logs(events, position_at=None, road_at=None):
                     "location": location,
                     "coordinates": coordinates,
                     "road": road,
+                    "route_reference": route_reference,
                     "reason": event.get("reason"),
                     "event_start": event["start"],
                     "event_end": event["end"],
@@ -66,6 +73,7 @@ def daily_logs(events, position_at=None, road_at=None):
                     "activity": activity,
                     "location": location,
                     "road": road,
+                    "route_reference": route_reference,
                     "reason": event.get("reason"),
                     "coordinates": coordinates,
                 }

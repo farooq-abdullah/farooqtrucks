@@ -66,12 +66,15 @@ for name, current, pickup, dropoff, cycle in cases:
     check(all(math.isfinite(n) for n in (plan['summary']['distance_miles'], plan['summary']['driving_hours'])), f'{name} finite route totals')
     check(abs(sum(e['duration_seconds'] for e in events if e['status'] == 'driving') / 3600 - plan['summary']['driving_hours']) < 1e-8, f'{name} driving time conservation')
     check(all(datetime.fromisoformat(a['end']) == datetime.fromisoformat(b['start']) for a, b in zip(events, events[1:])), f'{name} contiguous event timeline')
+    check(all('Along route at' not in item['location'] and 'In transit at' not in item['location'] for item in events + [remark for day in logs for remark in day['remarks']]), f'{name} readable location references instead of bare coordinates')
     check(sum(e['duration_seconds'] for e in events if e['activity'].startswith('Pickup')) == 3600, f'{name} one-hour pickup')
     check(sum(e['duration_seconds'] for e in events if e['activity'].startswith('Drop-off')) == 3600, f'{name} one-hour drop-off')
     if name in ('cycle-exhausted', 'long'):
         check(plan['summary']['cycle_restarts'] >= 1 and len(logs) > 1, f'{name} cycle restart and multiple days')
     if name == 'long':
         check(plan['summary']['fuel_stops'] >= 1, 'Long route scheduled fueling')
+        estimated = [event for event in events if event.get('location_estimated')]
+        check(bool(estimated) and all(event['location'].startswith(('Near ', 'About ')) for event in estimated), 'Bundled named places work on the hosted long trip')
     output = Path('artifacts/hosted')
     output.mkdir(parents=True, exist_ok=True)
     (output / f'{name}.json').write_text(json.dumps(plan, indent=2), encoding='utf-8')

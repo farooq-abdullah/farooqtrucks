@@ -20,7 +20,7 @@ export default function RouteView({ plan, onHelp, onDownload }) {
       <div key={label}><span className="caption">{label}</span><strong className="mono">{value}</strong>{label === 'Complete by' && <span className="caption">{shortDate(summary.completion_time)} · terminal clock</span>}</div>)}
     </div>
     <div className="desktop-only"><PlanningParameters plan={plan} onHelp={onHelp} /></div>
-    <div className="route-clocks"><h2 className="mobile-only">Clocks at completion</h2><DriverClocks clocks={plan.clocks} onHelp={onHelp} /></div>
+    <div className="route-clocks"><div className="section-heading clock-heading"><h2>Driver hours & trip breaks</h2><span className="caption">Hours at completion</span></div><DriverClocks clocks={plan.clocks} breaks={stops.filter(stop => stop.kind === 'break')} onBreak={stop => setFocus({ ...stop })} onHelp={onHelp} /></div>
     <div className="route-and-stops">
       <div className="route-map-column"><Suspense fallback={<Skeleton variant="rounded" height={470} />}><RouteMap plan={plan} focus={focus} /></Suspense>
         <div className="mobile-route-key mobile-only">{plan.locations.map((location, index) => <div key={index}><b>{index + 1}</b><span><small>{['Start', 'Pickup', 'Drop-off'][index]}</small>{shortPlace(location.log_location || location.label)}</span></div>)}</div>
@@ -30,9 +30,10 @@ export default function RouteView({ plan, onHelp, onDownload }) {
         <ol>{stops.map((stop, index) => <li key={stop.key}><ButtonBase className="itinerary-stop" onClick={() => setFocus({ ...stop })} aria-label={`Show ${stop.title} at ${stop.place} on map`}>
           <Waypoint kind={stop.kind} /><div><span className="caption mono">{String(index + 1).padStart(2, '0')} · {stop.title.toUpperCase()}</span>
             <strong title={stop.fullPlace}>{stop.place}</strong><span className="mono stop-time">{shortDate(stop.start)} · {clock(stop.start)}{stop.hours > 0 && `–${stop.start.slice(0, 10) !== stop.end.slice(0, 10) ? shortDate(stop.end) + ' ' : ''}${clock(stop.end)}`}</span>
+            {stop.routeReference && <span className="caption stop-route-context">Estimated area · {stop.routeReference}</span>}
             <span className="caption">{stop.kind === 'start' ? (stop.title === 'Depart' ? 'Departure' : 'Planning starts') : `${hm(stop.hours)} ${stop.status === 'on_duty' ? 'on duty' : 'rest'}`}</span>
             {['break', 'rest', 'restart'].includes(stop.kind) && <span className="caption stop-reason">{stop.reason}</span>}
-          </div></ButtonBase></li>)}</ol>
+          </div></ButtonBase>{['break', 'rest', 'restart', 'fuel'].includes(stop.kind) && stop.coordinates && <Button component="a" className="stop-map-link" href={`https://www.google.com/maps/search/?api=1&query=${stop.coordinates[1]},${stop.coordinates[0]}`} target="_blank" rel="noopener noreferrer" size="small" startIcon={<Icon name="route" />}>Open stop area in Maps</Button>}</li>)}</ol>
         <p className="stop-summary"><Icon name={extra.length ? 'fuel' : 'check'} />{extra.length ? `${summary.fuel_stops} fuel stops · ${extra.length - summary.fuel_stops} rest / break stops` : 'No extra fuel or rest stop due'}</p>
       </section>
     </div>

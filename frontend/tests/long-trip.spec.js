@@ -14,6 +14,8 @@ test('long road trip shows fuel, rests and a sheet for every day', async ({ page
   expect(plan.summary.fuel_stops).toBeGreaterThanOrEqual(2);
   expect(plan.summary.cycle_restarts).toBeGreaterThanOrEqual(1);
   expect(plan.events.some(e => e.activity.startsWith('Daily rest'))).toBeTruthy();
+  await expect(page.getByRole('button', {name:/30-minute breaks: [1-9]\d* planned/})).toBeVisible();
+  await expect(page.locator('.driver-clocks')).not.toContainText('Not due');
   expect(plan.daily_logs.every(log => sum(log.totals_minutes) === 1440)).toBeTruthy();
   const fuel = plan.events.filter(e => e.activity.startsWith('Fueling'));
   let previous = 0;

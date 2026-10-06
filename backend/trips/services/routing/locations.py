@@ -68,6 +68,16 @@ class RouteLocator:
             remaining -= leg["distance_miles"]
         return None
 
+    def reference_at(self, miles):
+        try:
+            return reverse_label(self.at(miles))
+        except RoutingError:
+            return self.road_reference_at(miles)
+
+    def road_reference_at(self, miles):
+        road = self.road_at(miles)
+        return f"On {road or 'planned route'} · {miles:,.0f} mi into trip"
+
 
 def annotate_schedule(events, route, locations):
     locator = RouteLocator(route["legs"])
@@ -83,6 +93,7 @@ def annotate_schedule(events, route, locations):
         event["coordinates"] = coordinates
         event["end_coordinates"] = locator.at(event["end_route_miles"])
         event["road"] = locator.road_at(event["start_route_miles"])
+        event["location_estimated"] = False
         if event["location"].startswith(("Along route", "Route leg")):
             known = next(
                 (
@@ -103,11 +114,17 @@ def annotate_schedule(events, route, locations):
                 try:
                     resolved[key] = reverse_label(coordinates)
                 except RoutingError:
-                    resolved[key] = f"Along route at {coordinates[1]:.4f}, {coordinates[0]:.4f}"
+                    resolved[key] = None
                     warnings.append(
-                        "Some stop locations could not be named; their coordinates are included."
+                        "Some nearby place names are unavailable; use the road and trip mileage shown."
                     )
-            event["location"] = resolved[key]
+            event["location"] = resolved[key] or locator.road_reference_at(
+                event["start_route_miles"]
+            )
+            event["location_estimated"] = True
+            event["route_reference"] = (
+                f"{event['road']} · " if event["road"] else ""
+            ) + f"{event['start_route_miles']:,.0f} mi into trip"
         else:
             # Exact pickup/current/dropoff labels are already geocoded.
             for location in locations:

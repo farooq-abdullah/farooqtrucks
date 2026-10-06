@@ -9,6 +9,7 @@ from django.core.cache import cache
 from .client import LocationError, RoutingError, _geocoding_request, _suggestions_request
 from .photon import photon_results
 from .place_names import US_STATES, common_places, expand_query
+from .place_reference import regional_reference
 
 
 def _supported(country, coordinates):
@@ -172,40 +173,5 @@ def geocode(query):
 
 
 def reverse_label(coordinates):
-    lon, lat = coordinates
-    key = f"reverse:v2:{lon:.4f},{lat:.4f}"
-    cached = cache.get(key)
-    if cached:
-        return cached
-    data = _geocoding_request(
-        "reverse",
-        {
-            "lon": lon,
-            "lat": lat,
-            "format": "jsonv2",
-            "zoom": 10,
-        },
-    )
-    address = data.get("address", {}) if isinstance(data, dict) else {}
-    if not isinstance(address, dict):
-        raise RoutingError("The geocoder returned an invalid stop location.")
-    town = next(
-        (
-            address[k]
-            for k in ("city", "town", "village", "municipality", "county")
-            if address.get(k)
-        ),
-        None,
-    )
-    iso_state = address.get("ISO3166-2-lvl4", "") or ""
-    if not isinstance(iso_state, str):
-        raise RoutingError("The geocoder returned an invalid stop location.")
-    state = iso_state.removeprefix("US-") or address.get("state") or ""
-    state = next((code for code, name in US_STATES.items() if name == state), state)
-    label = (
-        f"Near {town}" + (f", {state}" if state else "")
-        if town
-        else f"Along route at {lat:.4f}, {lon:.4f}"
-    )
-    cache.set(key, label, 86400)
-    return label
+    """Name every stop without depending on a slow or unavailable public reverse API."""
+    return regional_reference(coordinates)

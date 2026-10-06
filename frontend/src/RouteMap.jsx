@@ -85,7 +85,6 @@ export default function RouteMap({ plan, preview = false, showSample = false, fo
   }, [focus, compact]);
   return <div className={`map-wrap ${preview ? 'preview-map' : ''}`} data-tiles-ready={tilesReady}>
     <div ref={container} className="route-map" role="region" aria-label={preview ? 'Entered locations preview' : 'Road route and planned stops'} />
-    {preview && !plan && !showSample && <div className="map-empty"><h2>Your route starts here</h2><p>Plan your trip to see these locations, stops and daily logs.</p></div>}
     {tileError && <p className="map-status" role="status">Background map unavailable. Route and stop data remain visible.</p>}
   </div>;
 }

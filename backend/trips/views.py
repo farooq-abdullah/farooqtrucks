@@ -77,7 +77,9 @@ def plan_trip(request):
     except RoutingError as exc:
         return Response({"detail": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
     locator = RouteLocator(route["legs"])
-    logs = daily_logs(events, position_at=locator.at, road_at=locator.road_at)
+    logs = daily_logs(
+        events, position_at=locator.at, road_at=locator.road_at, place_at=locator.reference_at
+    )
     total_seconds = sum(event["duration_seconds"] for event in events)
     timezone_label = timezone_name or f"Configured fallback {departure.strftime('%z')}"
     if timezone_name is None:

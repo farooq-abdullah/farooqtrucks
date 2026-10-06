@@ -26,7 +26,11 @@ export function shortPlace(label = '') {
 
 /** Bare city name for compact titles: "Saint Louis, MO" -> "Saint Louis". */
 export const cityOnly = (label) => shortPlace(label).replace(/^Near /, '').split(',')[0];
-export const remarkPlace = remark => `${shortPlace(remark.location)}${remark.road && /^(Near |Along route)/.test(remark.location) ? ` · ${remark.road}` : ''}`;
+export function remarkPlace(remark) {
+  const place = shortPlace(remark.location);
+  const context = remark.route_reference || (remark.road && /^(Near |About |Along route|In transit)/.test(remark.location) ? remark.road : '');
+  return `${place}${context && !place.includes(context) ? ` · ${context}` : ''}`;
+}
 export function activityLabel(activity) {
   const drive = activity.match(/^((?:Continue )?[Dd]rive to )(.+)$/);
   return drive ? `${drive[1]}${shortPlace(drive[2])}` : activity;
@@ -162,6 +166,7 @@ export function buildItinerary(plan) {
       place: shortPlace(location?.label || event.location), fullPlace: location?.label || event.location,
       start: event.start, end: event.end, hours: event.duration_seconds / 3600,
       coordinates: location?.coordinates || event.coordinates,
+      routeReference: event.route_reference,
       reason: event.reason || activityReason(event.activity),
     });
   });

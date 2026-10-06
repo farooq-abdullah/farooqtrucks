@@ -41,5 +41,8 @@ tests use a recorded real API response; the other integration tests still call
 the providers. WebKit emulation does not reproduce a physical iPhone's keyboard
 or browser chrome. Safe-area behavior still benefits from checking on hardware.
 
-Screenshots and hosted release evidence are captured by the public verification
-workflow. Its WebKit step checks the same mobile regressions after deployment.
+The unauthenticated [hosted verification](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37519823898)
+passed all 49 HTTP/API checks, all 11 Chromium browser tests and both WebKit phone
+tests against https://farooqtrucks.vercel.app. Vercel deployment
+`dpl_7FZQgdHHbDKSnEAuVgi1PiqAW4ph` serves this release. Its downloadable artifact
+contains screenshots, PDFs and sample plans from the hosted checks.

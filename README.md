@@ -25,9 +25,11 @@ and the word-for-word video script is in [docs/LOOM-SCRIPT.md](docs/LOOM-SCRIPT.
 Live application: https://farooqtrucks.vercel.app
 Source: https://github.com/farooq-abdullah/farooqtrucks
 
-Delivery checks: 79 backend tests and nine browser checks passed. The same nine
-browser checks and the independent HTTP/API smoke checks also passed against
-the public app without signing in. Full evidence is in the delivery review.
+Delivery checks: 79 backend tests and eleven browser checks passed locally.
+All eleven browser tests, two WebKit phone checks and 49 HTTP/API checks also
+passed against the public app without signing in. Full evidence is in the
+delivery review. The phone layout and interaction
+corrections are documented in [docs/MOBILE-REVIEW.md](docs/MOBILE-REVIEW.md).
 
 ## Run locally on Windows
 
@@ -231,7 +233,10 @@ and set `$env:PLAYWRIGHT_CHANNEL='chromium'` before running `npm test`.
 Set `PLAYWRIGHT_BASE_URL` to a hosted origin to run those same checks against
 production. GitHub Actions validates Django, Ruff, the frontend build and the
 time-format regression on pushes. The manual `Verify public deployment` workflow
-checks the hosted API and runs browser tests without Vercel account cookies.
+checks the hosted API and runs Chromium and WebKit phone tests without Vercel
+account cookies. To check phone layouts locally in WebKit, install it with
+`npx playwright install webkit`, set `PLAYWRIGHT_BROWSER=webkit` and run
+`npm test -- mobile.spec.js` from `frontend`.
 
 After building, verify the production files from the repository root:
 

@@ -28,6 +28,10 @@ every possible route or certify actual driver activity.
 
 - Removed the driver's signature from the desktop/mobile sheet, printing, React
   state and downloaded JSON. Optional sheet metadata remains available.
+- Reworked phone layouts after checking the supplied iPhone screenshots: compact
+  header, bottom navigation, 16px inputs, smaller map markers, a full 24-hour
+  overview and a 48px activity selector. [MOBILE-REVIEW.md](MOBILE-REVIEW.md)
+  records the presentation regressions and preservation of exact schedule data.
 - Fixed suggestion requests holding a process-wide lock during slow network I/O.
   Added connection reuse, exact-query caches, 350ms debounce, bounded waits and
   stale-response protection. UI timeouts stop the endless searching state.
@@ -57,14 +61,15 @@ every possible route or certify actual driver activity.
 
 - 79 Django tests passed, including API/provider boundaries, cycle/shift/break
   limits, inspections, fuel spacing, midnight continuation and exact-day coverage.
-- Nine Playwright checks passed locally against the restarted backend and current
+- Eleven Playwright checks passed locally against the restarted backend and current
   frontend: real short/cross-country routes, responsive layouts, errors, cancellation,
   signatures absent from UI/export, multi-day printing, shorthand and search timeouts.
+- Both phone regression checks also passed in WebKit with mobile/touch emulation.
 - Django system check, Ruff lint and formatting passed. React production build,
   static collection and the production-settings asset/API smoke test passed.
 - Pinned backend requirements: pip-audit found no known vulnerabilities after the
   DRF correction. Frontend production dependencies: npm audit found zero.
-- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37513090635)
+- [GitHub CI](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37519689563)
   passed on Linux, including Django tests, Ruff, frontend build and time-format test.
 
 The HOS regressions include two deterministic sweeps totaling 330 varied route/
@@ -79,25 +84,26 @@ they are not a guarantee of public network latency. A live Tokio search took
 Photon's public service sometimes takes several seconds or times out. Other
 addresses retain bounded, visible failures and retry behavior.
 
-Independent final hosted measurements: NY 89ms, LA 82ms, SF 81ms. Short-trip
-planning took 1.1s; the long Los Angeles/Dallas/New York case took 25.2s,
+Independent final hosted measurements: NY 30ms, LA 32ms, SF 28ms. Short-trip
+planning took 0.9s; the long Los Angeles/Dallas/New York case took 24.9s,
 including road routing and optional stop naming. These are observations from
 the saved hosted report, not latency guarantees. The long case is preloaded
 in the Loom preparation so network wait does not consume the recording.
 
 ## Public verification status
 
-Vercel production deployment `dpl_8jhhHNbjobnjrvu7hZLUSF9GMmNZ` reached READY at
+Vercel production deployment `dpl_7FZQgdHHbDKSnEAuVgi1PiqAW4ph` reached READY at
 https://farooqtrucks.vercel.app with the complete audit fixes. An initial runtime
 import-path failure was corrected in the WSGI entry point; the React index and
 city index are explicitly included in the Python function bundle.
 
-The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37513361105)
+The unauthenticated [public verification workflow](https://github.com/farooq-abdullah/farooqtrucks/actions/runs/37519823898)
 passed all 49 HTTP/API checks: direct pages, built assets, health, NY/LA/SF searches,
 short trip, exhausted cycle, long trip, stationary trip and invalid-input response.
-All nine browser tests also passed against the production URL, including desktop/
+All eleven browser tests also passed against the production URL, including desktop/
 mobile views, route instructions, PDF pagination, signatures absent and search
-timeouts. The complete hosted workflow passed in 2 minutes 16 seconds. Requests
+timeouts. The two phone tests also passed in WebKit against production. The
+complete hosted workflow passed in 2 minutes 55 seconds. Requests
 used no Vercel cookies or bypass token; screenshots, PDFs and sample JSON plans
 are downloadable from that run's `hosted-verification` artifact.
 
@@ -106,10 +112,13 @@ included in the verified city index with its original OpenStreetMap source ID;
 the final long-trip API and browser checks passed. Short-trip endpoint remarks
 retain Chicago, IL and Springfield, IL without reverse-lookup warnings.
 
-This machine's network reset connections to the Vercel domains before HTTP,
-while GitHub's runner reached the public app successfully. If that persists for
-recording, use another connection for the hosted demo; the local UI remains
-available at http://127.0.0.1:5180/plan. This is distinct from a verified app error.
+This machine's home Wi-Fi path resets connections to vercel.app before HTTP.
+The same Vercel IP responds when the hostname is nextjs.org, and the user
+confirmed that the app opens on phone mobile data. GitHub's runner also reached
+the public app successfully. The responsible router/ISP component remains
+unidentified; changing the hosting plan does not resolve that filtering.
+For recording on this connection, a mobile-data hotspot remains an access
+workaround. The local UI is available at http://127.0.0.1:5180/plan.
 
 ## Accuracy scope reviewers should understand
 

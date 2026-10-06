@@ -8,9 +8,9 @@ For a teleprompter, use [the spoken-only script](LOOM-READ-ALOUD.txt). It contai
 
 - Live app: `https://farooqtrucks.vercel.app`
 - GitHub repository: `https://github.com/farooq-abdullah/farooqtrucks`
-- Release checks, as one spoken phrase: `seventy-nine backend tests, nine browser tests, formatting checks and the production build`
+- Release checks, as one spoken phrase: `seventy-nine backend tests, eleven browser tests, formatting checks and the production build`
 
-The tests above passed locally; the same nine browser checks also passed against the public Vercel app without signing in. The full evidence and assumptions are in `RELEASE-AUDIT.md`.
+The tests above passed locally and against the public Vercel app without signing in. The two phone regressions also passed in WebKit against production. The public verification record and assumptions are in `RELEASE-AUDIT.md`.
 
 ## Preparation
 
@@ -75,7 +75,7 @@ On the backend, the Django view coordinates the request. The serializer validate
 
 The scheduler uses integer seconds. The log service splits events at midnight without changing their meaning. React presents that returned schedule rather than implementing a second set of driving rules.
 
-The recorded release checks passed: seventy-nine backend tests, nine browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
+The recorded release checks passed: seventy-nine backend tests, eleven browser tests, formatting checks and the production build. They cover limit boundaries, cycle restarts, fueling intervals, midnight crossings, twenty-four-hour totals, input errors, responsive views and printing.
 
 Boundary tests replay events and assert the limits at every driving segment, rather than trusting output labels. Browser checks then verify that users see the same schedule on desktop, mobile and printed pages. This checks both the calculation and its presentation.
 

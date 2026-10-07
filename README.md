@@ -23,7 +23,12 @@ The final delivery review is in [docs/RELEASE-AUDIT.md](docs/RELEASE-AUDIT.md),
 and the word-for-word video script is in [docs/LOOM-SCRIPT.md](docs/LOOM-SCRIPT.md).
 
 Live application: https://farooqtrucks.vercel.app
+Backup application: https://farooqtrucks.netlify.app
 Source: https://github.com/farooq-abdullah/farooqtrucks
+
+The Netlify backup serves the same React app and proxies `/api/` requests
+to Django on Vercel. Use it if the Vercel hostname does not open on your network.
+See [the access investigation and deployment notes](docs/ACCESS-REPAIR.md).
 
 Delivery checks: 87 backend tests and eleven browser checks passed locally.
 All eleven browser tests, two WebKit phone checks and 54 HTTP/API checks also

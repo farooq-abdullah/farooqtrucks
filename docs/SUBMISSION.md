@@ -1,6 +1,7 @@
 # Assessment submission
 
 - Hosted app: https://farooqtrucks.vercel.app
+- Backup hosted app: https://farooqtrucks.netlify.app
 - Source repository: https://github.com/farooq-abdullah/farooqtrucks
 - Loom: record using [the complete script](LOOM-SCRIPT.md), then add your video URL.
 
@@ -39,6 +40,12 @@ Suggested submission message:
 > reviewing my work.
 
 ## Hosting and reproducing checks
+
+The Netlify backup serves the same frontend and proxies `/api/*` to the
+existing Vercel Django deployment. The browser contacts Netlify for both
+pages and API requests. See [ACCESS-REPAIR.md](ACCESS-REPAIR.md) for the
+configuration and verification evidence. The backup currently uses a manual
+deployment; source changes require a new upload or connecting the repository.
 
 Vercel deploys from the repository root using native Django support. The root
 vercel.json builds React, Vercel collects static assets for its CDN, and the

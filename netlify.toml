@@ -1,0 +1,28 @@
+[build]
+  command = "npm --prefix frontend ci && npm --prefix frontend run build"
+  publish = "frontend/dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+  VITE_API_BASE_URL = ""
+
+# Browsers contact Netlify for both the frontend and API. Netlify contacts
+# the existing Django deployment, avoiding direct browser connections to
+# vercel.app on networks that close those connections before HTTP.
+[[redirects]]
+  from = "/api/*"
+  to = "https://farooqtrucks.vercel.app/api/:splat"
+  status = 200
+  force = true
+
+# React handles direct navigation to /plan, /route and /logs.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
